@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Doggysitter</string>
+    <string name="title_str">Doggysitter</string>
 </resources>

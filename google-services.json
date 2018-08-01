@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "330114180585",
+    "firebase_url": "https://doggysitter-6a03d.firebaseio.com",
+    "project_id": "doggysitter-6a03d",
+    "storage_bucket": "doggysitter-6a03d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:330114180585:android:e9baa8806503391d",
+        "android_client_info": {
+          "package_name": "afeka.com.doggysitter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "330114180585-k517fa1lqgnnk8u9j5bfh7qotj27fcsl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOweVvqEU8R0K4awO2AKuMM3VRMX9ain4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
