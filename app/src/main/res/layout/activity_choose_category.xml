@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ChooseCategory"
+    tools:layout_editor_absoluteY="25dp">
+
+    <Button
+        android:id="@+id/doggysitter_btn"
+        android:layout_width="224dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="Doggysitter Service"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/utilities_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profile_btn" />
+
+    <Button
+        android:id="@+id/utilities_btn"
+        android:layout_width="224dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="Search for Utilities"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/doggysitter_btn" />
+
+    <Button
+        android:id="@+id/park_btn"
+        android:layout_width="224dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="Attend To Park"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/profile_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profile_image" />
+
+    <Button
+        android:id="@+id/profile_btn"
+        android:layout_width="224dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="Update Profile"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/doggysitter_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/park_btn" />
+
+    <TextView
+        android:id="@+id/welcome_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="21dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginStart="30dp"
+        android:text="Welcome User #1234!"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toTopOf="@+id/profile_image"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/log_out_btn" />
+
+    <Button
+        android:id="@+id/log_out_btn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="23dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginStart="1dp"
+        android:text="Log Out"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/welcome_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/profile_image"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="11dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginStart="1dp"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toTopOf="@+id/park_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/welcome_view"
+        app:srcCompat="@drawable/ic_launcher_background" />
+</android.support.constraint.ConstraintLayout>
