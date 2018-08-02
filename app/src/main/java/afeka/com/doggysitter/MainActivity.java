@@ -30,19 +30,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         FirebaseAuth auth = FirebaseAuth.getInstance();
 
-
-        boolean finish = getIntent().getBooleanExtra("finish", false);
-        if (finish) {
-            startActivityForResult(
-                    AuthUI.getInstance()
-                            .createSignInIntentBuilder()
-                            .setAvailableProviders(providers)
-                            .setLogo(R.drawable.doggybackground)
-                            .setIsSmartLockEnabled(false)
-                            .build(),
-                    RC_SIGN_IN);
-            finish();
-        }
         startActivityForResult(
                 AuthUI.getInstance()
                         .createSignInIntentBuilder()
@@ -51,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
                         .setIsSmartLockEnabled(false)
                         .build(),
                 RC_SIGN_IN);
+
 
     }
 
@@ -61,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
         if(requestCode == RC_SIGN_IN){
             if(resultCode == RESULT_OK){
                 startActivity(loggedIn);
+                finish();
             }
         }
     }

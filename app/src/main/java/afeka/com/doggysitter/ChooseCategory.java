@@ -31,7 +31,6 @@ public class ChooseCategory extends AppCompatActivity {
 
     void signOut() {
         Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra("finish", true);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); // To clean up all activities
         startActivity(intent);
         finish();
