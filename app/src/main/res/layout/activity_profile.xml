@@ -4,50 +4,33 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ProfileActivity">
-
-    <Button
-        android:id="@+id/button"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="2dp"
-        android:layout_marginStart="2dp"
-        android:text="Save"
-        app:layout_constraintBottom_toTopOf="@+id/button2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/photo_chooser" />
-
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:layout_marginEnd="2dp"
-        android:layout_marginStart="2dp"
-        android:text="Reset Fields"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button" />
+    tools:context=".ProfileActivity"
+    tools:layout_editor_absoluteY="25dp">
 
     <ScrollView
         android:id="@+id/scrollView2"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginBottom="56dp"
+        android:layout_height="369dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="55dp"
-        app:layout_constraintBottom_toBottomOf="@+id/button"
+        android:layout_marginTop="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/owner_name_view">
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/owner_name_view"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:textAlignment="center"
+                android:textSize="30sp"
+                tools:layout_editor_absoluteX="114dp"
+                tools:layout_editor_absoluteY="54dp" />
 
             <TextView
                 android:id="@+id/textView2"
@@ -100,30 +83,31 @@
                 android:layout_height="wrap_content"
                 android:text="Photo"
                 android:textAlignment="center" />
+
+            <ImageView
+                android:id="@+id/photo_chooser"
+                android:layout_width="match_parent"
+                android:layout_height="63dp"
+                app:srcCompat="?android:attr/actionModeFindDrawable"
+                tools:layout_editor_absoluteX="176dp"
+                tools:layout_editor_absoluteY="371dp" />
+
+            <Button
+                android:id="@+id/button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Save"
+                tools:layout_editor_absoluteX="2dp"
+                tools:layout_editor_absoluteY="455dp" />
+
+            <Button
+                android:id="@+id/button2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Reset Fields"
+                tools:layout_editor_absoluteX="2dp"
+                tools:layout_editor_absoluteY="503dp" />
         </LinearLayout>
     </ScrollView>
 
-    <ImageView
-        android:id="@+id/photo_chooser"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="52dp"
-        app:layout_constraintBottom_toTopOf="@+id/button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/owner_name_view"
-        app:srcCompat="?android:attr/actionModeFindDrawable" />
-
-    <TextView
-        android:id="@+id/owner_name_view"
-        android:layout_width="157dp"
-        android:layout_height="0dp"
-        android:layout_marginBottom="269dp"
-        android:layout_marginTop="54dp"
-        android:textAlignment="center"
-        android:textSize="30sp"
-        app:layout_constraintBottom_toTopOf="@+id/photo_chooser"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 </android.support.constraint.ConstraintLayout>
