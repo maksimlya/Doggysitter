@@ -8,13 +8,17 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class ChooseCategory extends AppCompatActivity {
+    private DatabaseReference mDatabase;
     Button logOut;
     Button profile;
     TextView welcomeMessage;
@@ -24,12 +28,14 @@ public class ChooseCategory extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_category);
         final FirebaseAuth auth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseDatabase.getInstance().getReference("/profiles");
         logOut = findViewById(R.id.log_out_btn);
         park = findViewById(R.id.park_btn);
         profile = findViewById(R.id.profile_btn);
         welcomeMessage = findViewById(R.id.welcome_view);
         welcomeMessage.append(auth.getCurrentUser().getDisplayName());
 
+        Toast.makeText(this,"Welcome owner of dog name: " + mDatabase.child("Maks").child("Name"),Toast.LENGTH_LONG).show();
 
         profile.setOnClickListener(new View.OnClickListener() {
             @Override
