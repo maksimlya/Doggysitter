@@ -123,9 +123,8 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 */
-                if(!localFile.exists()) {
-
-                    localFile.mkdirs();
+                if(!localFile.exists()) {                                              // If profile photo for current account does not exist on the phone memory
+                    localFile.getParentFile().mkdirs();
                     try {
                         localFile.createNewFile();
                     } catch (IOException e) {
@@ -149,8 +148,7 @@ public class MainActivity extends AppCompatActivity {
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {                                                                       // Loads placeholder photo
-                            StorageReference ref = FirebaseStorage.getInstance().getReference("Momo/profilePhoto.png");
-                            ref.getFile(localFile).addOnCompleteListener(new OnCompleteListener<FileDownloadTask.TaskSnapshot>() {
+                            FirebaseStorage.getInstance().getReference("placeholder.jpg").getFile(localFile).addOnCompleteListener(new OnCompleteListener<FileDownloadTask.TaskSnapshot>() {
                                 @Override
                                 public void onComplete(@NonNull Task<FileDownloadTask.TaskSnapshot> task) {
                                     String fileLocation = localFile.getAbsolutePath();
