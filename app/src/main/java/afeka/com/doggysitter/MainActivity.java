@@ -5,9 +5,12 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -23,16 +26,28 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    private FirebaseAuth auth = FirebaseAuth.getInstance();
+    public static String F_NAME;
+    private FileOutputStream fileOutputStream;
+    private StorageReference storageReference;
     private static final int RC_SIGN_IN = 0;
-    FirebaseUser user;
     private LatLng myLocation;
 // ...
 
@@ -70,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        FirebaseAuth auth = FirebaseAuth.getInstance();
+
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
             startActivityForResult(
@@ -88,11 +103,26 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Intent loggedIn = new Intent(this,ChooseCategory.class);
+        final Intent loggedIn = new Intent(this,ChooseCategory.class);
         if(requestCode == RC_SIGN_IN){
             if(resultCode == RESULT_OK){
-                startActivity(loggedIn);
-                finish();
+                    F_NAME = auth.getCurrentUser().getDisplayName() + "/profilePhoto.png";
+                    final File localFile = new File(F_NAME);
+
+
+                    if(!localFile.exists()) {
+                        storageReference = FirebaseStorage.getInstance().getReference(F_NAME);
+                        storageReference.getFile(localFile).addOnCompleteListener(new OnCompleteListener<FileDownloadTask.TaskSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<FileDownloadTask.TaskSnapshot> task) {
+                                String fileLocation = localFile.getAbsolutePath();
+                                loggedIn.putExtra("filePath", fileLocation);
+                                startActivity(loggedIn);
+                                finish();
+                            }
+                        });
+                    }
+
             }
         }
     }

@@ -51,11 +51,11 @@
                 android:id="@+id/textView5"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Dog Spiece"
+                android:text="Dog Specie"
                 android:textAlignment="center" />
 
             <EditText
-                android:id="@+id/spiece_text"
+                android:id="@+id/specie_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
