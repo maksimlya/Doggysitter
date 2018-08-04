@@ -1,6 +1,7 @@
 package afeka.com.doggysitter;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -116,7 +117,7 @@ try {
                     UploadTask uploadTask = storageReference.putBytes(data);
 
                     try {
-                        outputStream = new FileOutputStream(new File("kokoko.png"));
+                        outputStream = new FileOutputStream(new File(view.getContext().getFilesDir() + "kokoko.png"));
                         outputStream.write(data);
                         outputStream.close();
                     } catch (FileNotFoundException e){
