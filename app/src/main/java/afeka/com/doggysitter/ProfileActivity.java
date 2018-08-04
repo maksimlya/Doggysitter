@@ -116,7 +116,7 @@ try {
                     UploadTask uploadTask = storageReference.putBytes(data);
 
                     try {
-                        outputStream = new FileOutputStream(new File(MainActivity.F_NAME));
+                        outputStream = new FileOutputStream(new File("kokoko.png"));
                         outputStream.write(data);
                         outputStream.close();
                     } catch (FileNotFoundException e){
