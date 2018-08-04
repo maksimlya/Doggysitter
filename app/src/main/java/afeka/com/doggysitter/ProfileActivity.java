@@ -117,7 +117,10 @@ try {
                     UploadTask uploadTask = storageReference.putBytes(data);
 
                     try {
-                        outputStream = new FileOutputStream(new File(view.getContext().getFilesDir() + "//" + "momo//kokoko.jpg"));
+                        File a = new File(view.getContext().getFilesDir() + "/" + MainActivity.F_NAME);
+                        a.getParentFile().mkdirs();
+                        a.createNewFile();
+                        outputStream = new FileOutputStream(a,false);
                         outputStream.write(data);
                         outputStream.close();
                     } catch (FileNotFoundException e){
