@@ -10,7 +10,7 @@
     <ScrollView
         android:id="@+id/scrollView2"
         android:layout_width="0dp"
-        android:layout_height="418dp"
+        android:layout_height="506dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="4dp"
@@ -74,7 +74,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:inputType="number" />
+                android:inputType="number"
+                android:textAlignment="center" />
 
             <TextView
                 android:id="@+id/textView7"
@@ -86,9 +87,9 @@
             <ImageView
                 android:id="@+id/photo_chooser"
                 android:layout_width="match_parent"
+                android:layout_height="200dp"
                 android:maxHeight="200dp"
                 android:maxWidth="400dp"
-                android:layout_height="200dp"
                 app:srcCompat="?android:attr/actionModeFindDrawable" />
 
             <Button
