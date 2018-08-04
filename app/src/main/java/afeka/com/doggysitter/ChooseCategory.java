@@ -65,18 +65,6 @@ public class ChooseCategory extends AppCompatActivity {
 
         welcomeMessage.append(auth.getCurrentUser().getDisplayName());
 
-        try {
-            final File localFile = File.createTempFile("images", "png");
-            storageReference.getFile(localFile).addOnCompleteListener(new OnCompleteListener<FileDownloadTask.TaskSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<FileDownloadTask.TaskSnapshot> task) {
-                    Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
-                    profileImage.setImageBitmap(bitmap);
-                }
-            });
-        } catch (IOException e){
-
-        }
         mDatabase.child(auth.getCurrentUser().getDisplayName()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

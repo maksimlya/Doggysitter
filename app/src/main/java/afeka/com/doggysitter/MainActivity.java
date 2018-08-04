@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -37,6 +38,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
@@ -46,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth auth = FirebaseAuth.getInstance();
     public static String F_NAME;
     private FileOutputStream fileOutputStream;
+    private FileInputStream fileInputStream;
     private StorageReference storageReference;
     private static final int RC_SIGN_IN = 0;
     private LatLng myLocation;
@@ -107,21 +111,65 @@ public class MainActivity extends AppCompatActivity {
         if(requestCode == RC_SIGN_IN){
             if(resultCode == RESULT_OK){
                     F_NAME = auth.getCurrentUser().getDisplayName() + "/profilePhoto.png";
-                    final File localFile = new File(F_NAME);
+                    final File localFile =  new File(getFilesDir() + "/" + MainActivity.F_NAME);
+              /*
+                try {
+                    fileInputStream = new FileInputStream(localFile);
+                    fileInputStream.read();
+                    fileInputStream.close();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+*/
+                if(!localFile.exists()) {
 
-
-                    if(!localFile.exists()) {
-                        storageReference = FirebaseStorage.getInstance().getReference(F_NAME);
-                        storageReference.getFile(localFile).addOnCompleteListener(new OnCompleteListener<FileDownloadTask.TaskSnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<FileDownloadTask.TaskSnapshot> task) {
-                                String fileLocation = localFile.getAbsolutePath();
-                                loggedIn.putExtra("filePath", fileLocation);
-                                startActivity(loggedIn);
-                                finish();
-                            }
-                        });
+                    localFile.mkdirs();
+                    try {
+                        localFile.createNewFile();
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
+                    storageReference = FirebaseStorage.getInstance().getReference(F_NAME);
+
+                    storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {          // Check if profile photo exists on server.
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            storageReference.getFile(localFile).addOnCompleteListener(new OnCompleteListener<FileDownloadTask.TaskSnapshot>() {          // Loads the profile photo from server
+                                @Override
+                                public void onComplete(@NonNull Task<FileDownloadTask.TaskSnapshot> task) {
+                                    String fileLocation = localFile.getAbsolutePath();
+                                    loggedIn.putExtra("filePath", fileLocation);
+                                    startActivity(loggedIn);
+                                    finish();
+                                }
+                            });
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {                                                                       // Loads placeholder photo
+                            StorageReference ref = FirebaseStorage.getInstance().getReference("Momo/profilePhoto.png");
+                            ref.getFile(localFile).addOnCompleteListener(new OnCompleteListener<FileDownloadTask.TaskSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<FileDownloadTask.TaskSnapshot> task) {
+                                    String fileLocation = localFile.getAbsolutePath();
+                                    loggedIn.putExtra("filePath", fileLocation);
+                                    startActivity(loggedIn);
+                                    finish();
+                                }
+                            });
+                        }
+                    });
+
+
+
+                    } else {
+                    String fileLocation = localFile.getAbsolutePath();
+                    loggedIn.putExtra("filePath", fileLocation);
+                    startActivity(loggedIn);
+                    finish();
+                }
 
             }
         }
