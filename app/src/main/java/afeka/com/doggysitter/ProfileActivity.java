@@ -18,14 +18,9 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -34,9 +29,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 import pl.aprilapps.easyphotopicker.DefaultCallback;
 import pl.aprilapps.easyphotopicker.EasyImage;
@@ -47,14 +42,12 @@ public class ProfileActivity extends AppCompatActivity {
     final FirebaseAuth auth = FirebaseAuth.getInstance();
     final FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
     final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-    private TextView nameView;
     private EditText dogName;
     private EditText dogSpecie;
     private EditText dogAge;
     private ImageView choosePhoto;
-    private Button saveToDB;
-    private Button resetValues;
-    public final String fname = auth.getCurrentUser().getDisplayName() + "/profilePhoto.png";
+   // private Button resetValues;
+    public final String fname = Objects.requireNonNull(auth.getCurrentUser()).getDisplayName() + "/profilePhoto.png";
     private FileOutputStream outputStream;
     private StorageReference storageReference = firebaseStorage.getReference(fname);
 
@@ -69,30 +62,19 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        nameView = findViewById(R.id.owner_name_view);
+        TextView nameView = findViewById(R.id.owner_name_view);
 
-        nameView.append(auth.getCurrentUser().getDisplayName());
+        nameView.append(Objects.requireNonNull(auth.getCurrentUser()).getDisplayName());
 
         dogName = findViewById(R.id.dog_name_text);
         dogSpecie = findViewById(R.id.specie_text);
         dogAge = findViewById(R.id.age_txt);
         choosePhoto = findViewById(R.id.photo_chooser);
-        saveToDB = findViewById(R.id.save_btn);
-        resetValues = findViewById(R.id.reset_btn);
+        Button saveToDB = findViewById(R.id.save_btn);
+       // resetValues = findViewById(R.id.reset_btn);
 
-try {
-    final File localFile = File.createTempFile("images", "png");
-    storageReference.getFile(localFile).addOnCompleteListener(new OnCompleteListener<FileDownloadTask.TaskSnapshot>() {
-        @Override
-        public void onComplete(@NonNull Task<FileDownloadTask.TaskSnapshot> task) {
-            Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
-            choosePhoto.setImageBitmap(bitmap);
-        }
-    });
-} catch (IOException e){
-
-}
-
+        Bitmap bitmap = BitmapFactory.decodeFile(MainActivity.PHOTO_FILE_LOCATION);
+        choosePhoto.setImageBitmap(bitmap);
 
 
         saveToDB.setOnClickListener(new View.OnClickListener() {
@@ -109,17 +91,16 @@ try {
                     dPhoto.compress(Bitmap.CompressFormat.PNG,100,baos);
                     byte[] data = baos.toByteArray();
 
-                    Toast.makeText(ProfileActivity.this,"Dog name: " + dName + ", specie: " + dSpecie + ", age: " + dAge + " saved!!!",Toast.LENGTH_SHORT).show();
-                    mDatabase.child(auth.getCurrentUser().getDisplayName()).child("Dog Name").setValue(dName);
+                    mDatabase.child(Objects.requireNonNull(auth.getCurrentUser().getDisplayName())).child("Dog Name").setValue(dName);
                     mDatabase.child(auth.getCurrentUser().getDisplayName()).child("Dog Age").setValue(dAge);
                     mDatabase.child(auth.getCurrentUser().getDisplayName()).child("Dog Specie").setValue(dSpecie);
 
                     UploadTask uploadTask = storageReference.putBytes(data);
 
                     try {
-                        File a = new File(view.getContext().getFilesDir() + "/" + MainActivity.F_NAME);
-                        a.getParentFile().mkdirs();
-                        a.createNewFile();
+                        File a = new File(MainActivity.PHOTO_FILE_LOCATION);
+                        boolean mkdirs = a.getParentFile().mkdirs();
+                        boolean newFile = a.createNewFile();
                         outputStream = new FileOutputStream(a,false);
                         outputStream.write(data);
                         outputStream.close();
@@ -132,7 +113,10 @@ try {
                     }
 
 
-
+                    Toast.makeText(ProfileActivity.this,"Dog name: " + dName + ", specie: " + dSpecie + ", age: " + dAge + " saved!!!",Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(ProfileActivity.this,ChooseCategory.class);
+                    startActivity(intent);
+                    finish();
 
 
 
@@ -150,7 +134,7 @@ try {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         Nammu.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
@@ -178,7 +162,7 @@ try {
             }
 
             @Override
-            public void onImagesPicked(List<File> imagesFiles, EasyImage.ImageSource source, int type) {
+            public void onImagesPicked(@NonNull List<File> imagesFiles, EasyImage.ImageSource source, int type) {
                 Bitmap myBitmap = BitmapFactory.decodeFile(imagesFiles.get(0).getAbsolutePath());
                 choosePhoto.setImageBitmap(myBitmap);
                 dPhoto = myBitmap;
@@ -187,10 +171,7 @@ try {
     }
 
     private boolean isEmpty(EditText etText) {
-        if (etText.getText().toString().trim().length() > 0)
-            return false;
-
-        return true;
+        return etText.getText().toString().trim().length() <= 0;
     }
 
 }

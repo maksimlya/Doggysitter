@@ -1,46 +1,28 @@
 package afeka.com.doggysitter;
 
 import android.Manifest;
-import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.Location;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.Toast;
-
 import com.firebase.ui.auth.AuthUI;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -48,19 +30,14 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private FirebaseAuth auth = FirebaseAuth.getInstance();
     public static String F_NAME;
-    private FileOutputStream fileOutputStream;
-    private FileInputStream fileInputStream;
+    public static String PHOTO_FILE_LOCATION;
     private StorageReference storageReference;
     private static final int RC_SIGN_IN = 0;
     private LatLng myLocation;
-// ...
 
-    // Choose authentication providers
-    List<AuthUI.IdpConfig> providers = Arrays.asList(
+    List<AuthUI.IdpConfig> providers = Arrays.asList(                       // Google + email authorization
             new AuthUI.IdpConfig.EmailBuilder().build(),
             new AuthUI.IdpConfig.GoogleBuilder().build());
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,26 +47,9 @@ public class MainActivity extends AppCompatActivity {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             while (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, 2);
-
-
-
                 }
         }
-
-        if (googleServicesAvailable()) {
-            Toast.makeText(this, "Perfect!", Toast.LENGTH_LONG).show();
-        }
-
-
-
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
             startActivityForResult(
@@ -111,20 +71,10 @@ public class MainActivity extends AppCompatActivity {
         if(requestCode == RC_SIGN_IN){
             if(resultCode == RESULT_OK){
                     F_NAME = auth.getCurrentUser().getDisplayName() + "/profilePhoto.png";
-                    final File localFile =  new File(getFilesDir() + "/" + MainActivity.F_NAME);
-              /*
-                try {
-                    fileInputStream = new FileInputStream(localFile);
-                    fileInputStream.read();
-                    fileInputStream.close();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-*/
-                if(!localFile.exists()) {                                              // If profile photo for current account does not exist on the phone memory
-                    localFile.getParentFile().mkdirs();
+                    final File localFile =  new File(getFilesDir() + "/" + F_NAME);
+                    PHOTO_FILE_LOCATION = localFile.getAbsolutePath();
+                    if(!localFile.exists()) {                                              // If profile photo for current account does not exist on the phone memory
+                        localFile.getParentFile().mkdirs();
                     try {
                         localFile.createNewFile();
                     } catch (IOException e) {
@@ -138,8 +88,6 @@ public class MainActivity extends AppCompatActivity {
                             storageReference.getFile(localFile).addOnCompleteListener(new OnCompleteListener<FileDownloadTask.TaskSnapshot>() {          // Loads the profile photo from server
                                 @Override
                                 public void onComplete(@NonNull Task<FileDownloadTask.TaskSnapshot> task) {
-                                    String fileLocation = localFile.getAbsolutePath();
-                                    loggedIn.putExtra("filePath", fileLocation);
                                     startActivity(loggedIn);
                                     finish();
                                 }
@@ -151,8 +99,6 @@ public class MainActivity extends AppCompatActivity {
                             FirebaseStorage.getInstance().getReference("placeholder.jpg").getFile(localFile).addOnCompleteListener(new OnCompleteListener<FileDownloadTask.TaskSnapshot>() {
                                 @Override
                                 public void onComplete(@NonNull Task<FileDownloadTask.TaskSnapshot> task) {
-                                    String fileLocation = localFile.getAbsolutePath();
-                                    loggedIn.putExtra("filePath", fileLocation);
                                     startActivity(loggedIn);
                                     finish();
                                 }
@@ -163,8 +109,6 @@ public class MainActivity extends AppCompatActivity {
 
 
                     } else {
-                    String fileLocation = localFile.getAbsolutePath();
-                    loggedIn.putExtra("filePath", fileLocation);
                     startActivity(loggedIn);
                     finish();
                 }
@@ -174,18 +118,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void getLocation(){
-        LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        List<String> providers = lm.getProviders(true);
-        Location l = null;
-
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return;
         }
         FusedLocationProviderClient locationProviderClient = LocationServices.getFusedLocationProviderClient(this);
@@ -197,25 +130,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
-
-
-
-        return;
-    }
-
-    public boolean googleServicesAvailable() {
-        GoogleApiAvailability api = GoogleApiAvailability.getInstance();
-        int isAvailable = api.isGooglePlayServicesAvailable(this);
-        if (isAvailable == ConnectionResult.SUCCESS) {
-            return true;
-        } else if (api.isUserResolvableError(isAvailable)) {
-            Dialog dialog = api.getErrorDialog(this, isAvailable, 0);
-            dialog.show();
-        } else {
-            Toast.makeText(this, "Cant connect to play services!", Toast.LENGTH_LONG).show();
-        }
-        return false;
     }
 
 }
