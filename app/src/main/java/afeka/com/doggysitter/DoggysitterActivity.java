@@ -14,6 +14,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.File;
 import java.io.FileOutputStream;
 
 public class DoggysitterActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -22,7 +23,7 @@ public class DoggysitterActivity extends FragmentActivity implements OnMapReadyC
     private Button snapShot;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_doggysitter);
         snapShot = (Button)findViewById(R.id.snapshot_btn);
@@ -35,7 +36,9 @@ public class DoggysitterActivity extends FragmentActivity implements OnMapReadyC
                     public void onSnapshotReady(Bitmap snapshot) {
                         bitmap = snapshot;
                         try {
-                            FileOutputStream out = new FileOutputStream("/mnt/sdcard/Screenshots/Currentlocation.png");
+                            File f = new File(getFilesDir()+"/CurrentLocation.png");
+                            f.createNewFile();
+                            FileOutputStream out = new FileOutputStream(f);
                             bitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
                             Toast.makeText(DoggysitterActivity.this,"Screenshot taken", Toast.LENGTH_LONG).show();
                         }catch (Exception e){
