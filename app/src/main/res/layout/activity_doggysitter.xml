@@ -4,53 +4,41 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DoggysitterActivity">
+    tools:context=".DoggysitterActivity"
+    tools:layout_editor_absoluteY="25dp">
 
-    <EditText
-        android:id="@+id/result_text"
+    <ImageView
+        android:id="@+id/map_snapshot"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="22dp"
-        android:layout_marginEnd="13dp"
-        android:layout_marginStart="13dp"
-        android:ems="10"
-        android:inputType="textMultiLine"
+        android:layout_marginBottom="207dp"
+        android:layout_marginEnd="19dp"
+        android:layout_marginStart="19dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/snapshot_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/common_google_signin_btn_icon_dark" />
+
+    <fragment
+        android:id="@+id/map"
+        class="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/send_querry_btn" />
-
-    <EditText
-        android:id="@+id/x_querry"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="25dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        app:layout_constraintBottom_toTopOf="@+id/y_querry"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/y_querry"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="33dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        app:layout_constraintBottom_toTopOf="@+id/send_querry_btn"
-        app:layout_constraintStart_toStartOf="@+id/x_querry"
-        app:layout_constraintTop_toBottomOf="@+id/x_querry" />
-
     <Button
-        android:id="@+id/send_querry_btn"
+        android:id="@+id/snapshot_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="104dp"
-        android:layout_marginStart="16dp"
+        android:layout_marginBottom="43dp"
+        android:layout_marginEnd="19dp"
         android:text="Button"
-        app:layout_constraintBottom_toTopOf="@+id/result_text"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/y_querry" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/map_snapshot" />
 </android.support.constraint.ConstraintLayout>
