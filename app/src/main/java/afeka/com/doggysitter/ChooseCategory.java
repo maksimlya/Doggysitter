@@ -17,6 +17,7 @@ public class ChooseCategory extends AppCompatActivity {
     public final String fname = auth.getCurrentUser().getDisplayName() + "/profilePhoto.png";
     Button logOut;
     Button profile;
+    Button doggysitter;
     TextView welcomeMessage;
     Button park;
     ImageView profileImage;
@@ -29,12 +30,21 @@ public class ChooseCategory extends AppCompatActivity {
         logOut = findViewById(R.id.log_out_btn);
         park = findViewById(R.id.park_btn);
         profile = findViewById(R.id.profile_btn);
+        doggysitter = findViewById(R.id.doggysitter_btn);
         welcomeMessage = findViewById(R.id.welcome_view);
         Bitmap bitmap = BitmapFactory.decodeFile(MainActivity.PHOTO_FILE_LOCATION);
         profileImage.setImageBitmap(bitmap);
 
         welcomeMessage.append(auth.getCurrentUser().getDisplayName());
 
+
+        doggysitter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ChooseCategory.this,DoggysitterActivity.class);
+                startActivity(intent);
+            }
+        });
 
         profile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -48,8 +58,8 @@ public class ChooseCategory extends AppCompatActivity {
         park.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-              //  Intent intent = new Intent(ChooseCategory.this,MapActivity.class);
-              //  startActivity(intent);
+                Intent intent = new Intent(ChooseCategory.this,ParksListActivity.class);
+                startActivity(intent);
             }
         });
 

@@ -38,7 +38,9 @@
             android:value="@integer/google_play_services_version" />
 
         <activity android:name=".MapActivity" />
-        <activity android:name=".ProfileActivity"></activity>
+        <activity android:name=".ProfileActivity" />
+        <activity android:name=".DoggysitterActivity" />
+        <activity android:name=".ParksListActivity"></activity>
     </application>
 
 </manifest>

@@ -31,9 +31,10 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth auth = FirebaseAuth.getInstance();
     public static String F_NAME;
     public static String PHOTO_FILE_LOCATION;
+    public static LatLng MY_LOCATION;
     private StorageReference storageReference;
     private static final int RC_SIGN_IN = 0;
-    private LatLng myLocation;
+
 
     List<AuthUI.IdpConfig> providers = Arrays.asList(                       // Google + email authorization
             new AuthUI.IdpConfig.EmailBuilder().build(),
@@ -126,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Location location) {
                 if(location != null){
-                    myLocation = new LatLng(location.getLatitude(),location.getLongitude());
+                    MY_LOCATION = new LatLng(location.getLatitude(),location.getLongitude());
                 }
             }
         });
