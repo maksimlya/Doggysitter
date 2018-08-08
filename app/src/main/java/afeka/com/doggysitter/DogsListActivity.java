@@ -33,12 +33,9 @@ public class DogsListActivity extends AppCompatActivity {
 
         String pName = intent.getStringExtra("Name");
         String path = getFilesDir() + "/parkPhotos/" + pName;
-        File a = new File(path);
-        Bitmap bitmap;
-        if(a.exists()) {
-            bitmap = BitmapFactory.decodeFile(path);
-            parkImage.setImageBitmap(bitmap);
-        }
+        Bitmap bitmap = BitmapFactory.decodeFile(path);
+        parkImage.setImageBitmap(bitmap);
+
 
 
 

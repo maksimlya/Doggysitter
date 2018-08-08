@@ -17,10 +17,12 @@ import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
 import com.firebase.geofire.GeoQueryEventListener;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -54,23 +56,31 @@ public class ParksListActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Park tmp = (Park) parent.getAdapter().getItem(position);
                 final Intent intent = new Intent(ParksListActivity.this, DogsListActivity.class);
-                intent.putExtra("Name", "momo.jpg");
-                final File localFile = new File(getFilesDir() + "/parkPhotos/" + "momo.jpg");
+                intent.putExtra("Name", tmp.getName());
+                final File localFile = new File(getFilesDir() + "/parkPhotos/" + tmp.getName());
                 if (!localFile.exists()) {                                              // If profile photo for current account does not exist on the phone memory
                     localFile.getParentFile().mkdirs();
                     try {
                         localFile.createNewFile();
+                        storage = FirebaseStorage.getInstance().getReference("/Snapshots/" + tmp.getName());
+                        storage.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                storage.getFile(localFile).addOnCompleteListener(new OnCompleteListener<FileDownloadTask.TaskSnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<FileDownloadTask.TaskSnapshot> task) {
+                                        startActivity(intent);
+                                    }
+                                });
+                            }
+                        });
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                } else {
+                    startActivity(intent);
                 }
-                storage = FirebaseStorage.getInstance().getReference("/Snapshots/" + tmp.getName());
-                storage.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Uri> task) {
-                        startActivity(intent);
-                    }
-                });
+
 
             }
         });
