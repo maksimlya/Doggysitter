@@ -20,12 +20,14 @@ public class ChooseCategory extends AppCompatActivity {
     Button doggysitter;
     TextView welcomeMessage;
     Button park;
+    Button utilities;
     ImageView profileImage;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_category);
 
+        utilities = findViewById(R.id.utilities_btn);
         profileImage = findViewById(R.id.profile_image);
         logOut = findViewById(R.id.log_out_btn);
         park = findViewById(R.id.park_btn);
@@ -34,6 +36,14 @@ public class ChooseCategory extends AppCompatActivity {
         welcomeMessage = findViewById(R.id.welcome_view);
         Bitmap bitmap = BitmapFactory.decodeFile(MainActivity.PHOTO_FILE_LOCATION);
         profileImage.setImageBitmap(bitmap);
+
+        utilities.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ChooseCategory.this,Test.class);
+                startActivity(intent);
+            }
+        });
 
         welcomeMessage.append(auth.getCurrentUser().getDisplayName());
 

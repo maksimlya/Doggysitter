@@ -10,8 +10,11 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.Toast;
+
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -27,7 +30,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements LocationListener {
     private FirebaseAuth auth = FirebaseAuth.getInstance();
     public static String F_NAME;
     public static String PHOTO_FILE_LOCATION;
@@ -123,14 +126,26 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         FusedLocationProviderClient locationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
         locationProviderClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
-                if(location != null){
+                  if(location != null){
                     MY_LOCATION = new LatLng(location.getLatitude(),location.getLongitude());
-                }
+                    Toast.makeText(MainActivity.this,"Got Location!" + MY_LOCATION.latitude + " " + MY_LOCATION.longitude,Toast.LENGTH_LONG).show();
+
+                  }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(MainActivity.this,"Failed to get location!!!",Toast.LENGTH_LONG).show();
             }
         });
     }
 
+    @Override
+    public void onLocationChanged(Location location) {
+        MY_LOCATION = new LatLng(location.getLatitude(),location.getLongitude());
+    }
 }
