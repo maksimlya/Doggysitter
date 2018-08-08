@@ -9,7 +9,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
 
 
 public class ChooseCategory extends AppCompatActivity {
@@ -77,6 +80,7 @@ public class ChooseCategory extends AppCompatActivity {
         logOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                FirebaseDatabase.getInstance().goOffline();
                 auth.signOut();
                 signOut();
             }

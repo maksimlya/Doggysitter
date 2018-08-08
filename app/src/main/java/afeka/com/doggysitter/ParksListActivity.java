@@ -90,45 +90,45 @@ public class ParksListActivity extends AppCompatActivity {
         GeoLocation myLocation = new GeoLocation(MainActivity.MY_LOCATION.latitude,MainActivity.MY_LOCATION.longitude);
 
         GeoQuery geoQuery = geoFire.queryAtLocation(myLocation,10);
-//
-//        geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
-//            @Override
-//            public void onKeyEntered(String key, GeoLocation location) {
-//                Park tmp = new Park();
-//                tmp.setName(key);
-//                tmp.setLocation(location);
-//                tmp.setDogsAmount(0);
-//                parks.add(tmp);
-//                adapter.sort();
-//                adapter.notifyDataSetChanged();
-//
-//            }
-//
-//            @Override
-//            public void onKeyExited(String key) {
-//
-//            }
-//
-//            @Override
-//            public void onKeyMoved(String key, GeoLocation location) {
-//
-//            }
-//
-//            @Override
-//            public void onGeoQueryReady() {
-//
-//            }
-//
-//            @Override
-//            public void onGeoQueryError(DatabaseError error) {
-//
-//            }
-//        });
-//
-//
-//
-//
-//
-//
+
+        geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
+            @Override
+            public void onKeyEntered(String key, GeoLocation location) {
+                Park tmp = new Park();
+                tmp.setName(key);
+                tmp.setLocation(location);
+                tmp.setDogsAmount(0);
+                parks.add(tmp);
+                adapter.sort();
+                adapter.notifyDataSetChanged();
+
+            }
+
+            @Override
+            public void onKeyExited(String key) {
+
+            }
+
+            @Override
+            public void onKeyMoved(String key, GeoLocation location) {
+
+            }
+
+            @Override
+            public void onGeoQueryReady() {
+
+            }
+
+            @Override
+            public void onGeoQueryError(DatabaseError error) {
+
+            }
+        });
+
+
+
+
+
+
     }
 }

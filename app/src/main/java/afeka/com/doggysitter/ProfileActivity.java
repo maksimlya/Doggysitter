@@ -46,7 +46,7 @@ public class ProfileActivity extends AppCompatActivity {
     public final String fname = Objects.requireNonNull(auth.getCurrentUser()).getDisplayName() + "/profilePhoto.png";
     final FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
     private StorageReference storageReference = firebaseStorage.getReference(fname);
-    final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference(Objects.requireNonNull(auth.getCurrentUser().getDisplayName()));
+    final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("Users/" + Objects.requireNonNull(auth.getCurrentUser().getDisplayName()));
     private EditText dogName;
     private EditText dogSpecie;
     private EditText dogAge;

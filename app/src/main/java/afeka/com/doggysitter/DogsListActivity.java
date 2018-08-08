@@ -6,6 +6,8 @@ import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -26,7 +28,7 @@ public class DogsListActivity extends AppCompatActivity {
     private String fname;
     private StorageReference firebaseStorage;
     private DatabaseReference mDatabase;
-
+    private Button navigateToPark;
     private ImageView parkImage;
 
 
@@ -35,6 +37,7 @@ public class DogsListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dogs_list);
         parkImage = findViewById(R.id.park_img);
+        navigateToPark = findViewById(R.id.navigate_btn);
 
         Intent intent = getIntent();
 
@@ -63,6 +66,15 @@ public class DogsListActivity extends AppCompatActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
+            }
+        });
+
+        navigateToPark.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(DogsListActivity.this,Navigation.class);
+                intent.putExtra("Name",tmp.getName());
+                startActivity(intent);
             }
         });
 

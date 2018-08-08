@@ -21,7 +21,14 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.OnDisconnect;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -75,6 +82,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         if(requestCode == RC_SIGN_IN){
             if(resultCode == RESULT_OK){
                     F_NAME = auth.getCurrentUser().getDisplayName() + "/profilePhoto.png";
+                    FirebaseDatabase.getInstance().getReference("/Users/" + auth.getCurrentUser().getDisplayName()).child("isOnline").setValue(true);
+                    FirebaseDatabase.getInstance().getReference("/Users/" + auth.getCurrentUser().getDisplayName()).child("isOnline").onDisconnect().setValue(false);
+
+
+
+
                     final File localFile =  new File(getFilesDir() + "/" + F_NAME);
                     PHOTO_FILE_LOCATION = localFile.getAbsolutePath();
                     if(!localFile.exists()) {                                              // If profile photo for current account does not exist on the phone memory
