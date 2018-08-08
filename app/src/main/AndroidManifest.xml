@@ -40,7 +40,8 @@
         <activity android:name=".MapActivity" />
         <activity android:name=".ProfileActivity" />
         <activity android:name=".DoggysitterActivity" />
-        <activity android:name=".ParksListActivity"></activity>
+        <activity android:name=".ParksListActivity" />
+        <activity android:name=".DogsListActivity"></activity>
     </application>
 
 </manifest>
