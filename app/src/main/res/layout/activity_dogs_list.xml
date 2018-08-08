@@ -9,7 +9,7 @@
     <ImageView
         android:id="@+id/park_img"
         android:layout_width="385dp"
-        android:layout_height="201dp"
+        android:layout_height="239dp"
         app:srcCompat="@android:drawable/sym_def_app_icon"
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="0dp" />
