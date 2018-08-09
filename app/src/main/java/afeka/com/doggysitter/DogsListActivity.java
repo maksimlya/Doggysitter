@@ -128,9 +128,9 @@ public class DogsListActivity extends AppCompatActivity {
                             mutableData.setValue(1);
                         else
                             mutableData.setValue(dogsAmount+1);
-                        HashMap<String,Object> ve = new HashMap<>();
-                        ve.put("dogsAmount",dogsAmount);
-                        FirebaseDatabase.getInstance().getReference("/Parks/" + newPark.getName()).onDisconnect().updateChildren(ve);
+//                        HashMap<String,Object> ve = new HashMap<>();
+//                        ve.put("dogsAmount",dogsAmount);
+//                        FirebaseDatabase.getInstance().getReference("/Parks/" + newPark.getName()).onDisconnect().updateChildren(ve);
                         return Transaction.success(mutableData);
                     }
 
@@ -141,6 +141,7 @@ public class DogsListActivity extends AppCompatActivity {
                 });
 
                 FirebaseDatabase.getInstance().getReference("/Parks/" + newPark.getName()).child("Visitors").child(auth.getCurrentUser().getDisplayName()).onDisconnect().removeValue();
+              //  FirebaseDatabase.getInstance().getReference("/Parks/" + newPark.getName()).onDisconnect()
             }
         });
 
