@@ -10,6 +10,18 @@ public class Park implements Comparable<Park> {
     private int dogsAmount;
     private GeoLocation location;
 
+    public Park(String name, int dogsAmount, GeoLocation location){
+        this.name = name;
+        this.dogsAmount = dogsAmount;
+        this.location = location;
+
+    }
+
+    public Park(){
+
+    }
+
+
     public String getName() {
         return name;
     }

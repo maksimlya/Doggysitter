@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -13,21 +14,27 @@ import android.widget.Toast;
 
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Objects;
 
 public class DogsListActivity extends AppCompatActivity {
     private String fname;
     private StorageReference firebaseStorage;
     private DatabaseReference mDatabase;
+    private FirebaseAuth auth = FirebaseAuth.getInstance();
     private Button navigateToPark;
     private ImageView parkImage;
 
@@ -46,22 +53,38 @@ public class DogsListActivity extends AppCompatActivity {
         String path = getFilesDir() + "/parkPhotos/" + pName;
         Bitmap bitmap = BitmapFactory.decodeFile(path);
         parkImage.setImageBitmap(bitmap);
-        final Park tmp = new Park();
+        final Park newPark = new Park();
+        final Park oldPark = new Park();
+
+
+        FirebaseDatabase.getInstance().getReference("Users/" + auth.getCurrentUser().getDisplayName()).child("Park").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String old = dataSnapshot.child("name").getValue(String.class);
+                if(old != null)
+                    oldPark.setName(old);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                tmp.setName(dataSnapshot.getKey());
+                newPark.setName(dataSnapshot.getKey());
                 GeoLocation parkLocation = new GeoLocation(Objects.requireNonNull(dataSnapshot.child("0").getValue(Double.class)),Objects.requireNonNull(dataSnapshot.child("1").getValue(Double.class)));
-                tmp.setLocation(parkLocation);
-                if(dataSnapshot.child("dogAmount").getValue(Integer.class) == null){
-                    mDatabase.child("dogAmount").setValue(0);
-                    tmp.setDogsAmount(0);
+                newPark.setLocation(parkLocation);
+                if(dataSnapshot.child("dogsAmount").getValue(Integer.class) == null){
+                    mDatabase.child("dogsAmount").setValue(0);
+                    newPark.setDogsAmount(0);
 
                 }
                 else
-                    tmp.setDogsAmount(Objects.requireNonNull(dataSnapshot.child("dogAmount").getValue(Integer.class)));
-                Toast.makeText(DogsListActivity.this,"Park name: " + tmp.getName() + ", Coords: Lat: " + tmp.getLocation().latitude + ", Lon: " + tmp.getLocation().longitude + ", dogsAmount: " +tmp.getDogsAmount(),Toast.LENGTH_LONG).show();
-            }
+                    newPark.setDogsAmount(Objects.requireNonNull(dataSnapshot.child("dogsAmount").getValue(Integer.class)));
+                 }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -72,11 +95,55 @@ public class DogsListActivity extends AppCompatActivity {
         navigateToPark.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(DogsListActivity.this,Navigation.class);
-                intent.putExtra("Name",tmp.getName());
-                startActivity(intent);
+                if(oldPark.getName() != null) {
+                    FirebaseDatabase.getInstance().getReference("/Parks/" + oldPark.getName()).child("Visitors").child(auth.getCurrentUser().getDisplayName()).removeValue();
+                    FirebaseDatabase.getInstance().getReference("/Parks/" + oldPark.getName()).child("dogsAmount").runTransaction(new Transaction.Handler() {
+                        @NonNull
+                        @Override
+                        public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+                            Integer dogsAmount = mutableData.getValue(Integer.class);
+                            if(dogsAmount == null)
+                                mutableData.setValue(1);
+                            else
+                                mutableData.setValue(dogsAmount-1);
+                            return Transaction.success(mutableData);
+                        }
+
+                        @Override
+                        public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
+
+                        }
+                    });
+                }
+                FirebaseDatabase.getInstance().getReference("/Users/" + auth.getCurrentUser().getDisplayName()).child("Park").setValue(newPark);
+                HashMap<String,Object> newVisitor = new HashMap<>();
+                newVisitor.put(auth.getCurrentUser().getDisplayName(),newPark.getDistanceToPark());
+                FirebaseDatabase.getInstance().getReference("/Parks/" + newPark.getName()).child("Visitors").updateChildren(newVisitor);
+                FirebaseDatabase.getInstance().getReference("/Parks/" + newPark.getName()).child("dogsAmount").runTransaction(new Transaction.Handler() {
+                    @NonNull
+                    @Override
+                    public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+                        Integer dogsAmount = mutableData.getValue(Integer.class);
+                        if(dogsAmount == null)
+                            mutableData.setValue(1);
+                        else
+                            mutableData.setValue(dogsAmount+1);
+                        HashMap<String,Object> ve = new HashMap<>();
+                        ve.put("dogsAmount",dogsAmount);
+                        FirebaseDatabase.getInstance().getReference("/Parks/" + newPark.getName()).onDisconnect().updateChildren(ve);
+                        return Transaction.success(mutableData);
+                    }
+
+                    @Override
+                    public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
+                        Toast.makeText(DogsListActivity.this,"Transaction success!",Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                FirebaseDatabase.getInstance().getReference("/Parks/" + newPark.getName()).child("Visitors").child(auth.getCurrentUser().getDisplayName()).onDisconnect().removeValue();
             }
         });
+
 
 
 

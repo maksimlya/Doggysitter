@@ -84,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                     F_NAME = auth.getCurrentUser().getDisplayName() + "/profilePhoto.png";
                     FirebaseDatabase.getInstance().getReference("/Users/" + auth.getCurrentUser().getDisplayName()).child("isOnline").setValue(true);
                     FirebaseDatabase.getInstance().getReference("/Users/" + auth.getCurrentUser().getDisplayName()).child("isOnline").onDisconnect().setValue(false);
+                    FirebaseDatabase.getInstance().getReference("/Users/" + auth.getCurrentUser().getDisplayName()).child("Park").onDisconnect().removeValue();
                     FirebaseDatabase.getInstance().goOnline();
 
 
