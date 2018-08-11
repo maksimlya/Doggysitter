@@ -22,6 +22,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
+import com.google.firebase.database.OnDisconnect;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
@@ -93,59 +94,37 @@ public class DogsListActivity extends AppCompatActivity {
             }
         });
 
+
         navigateToPark.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(oldPark.getName() != null) {
                     FirebaseDatabase.getInstance().getReference("/Parks/" + oldPark.getName()).child("Visitors").child(auth.getCurrentUser().getDisplayName()).removeValue();
                 }
+                FirebaseDatabase.getInstance().getReference("/Parks/" + newPark.getName()).child("Visitors").child(auth.getCurrentUser().getDisplayName()).onDisconnect().removeValue();
                 FirebaseDatabase.getInstance().getReference("/Users/" + auth.getCurrentUser().getDisplayName()).child("Park").setValue(newPark);
                 HashMap<String,Object> newVisitor = new HashMap<>();
                 newVisitor.put(auth.getCurrentUser().getDisplayName(),newPark.getDistanceToPark());
                 FirebaseDatabase.getInstance().getReference("/Parks/" + newPark.getName()).child("Visitors").updateChildren(newVisitor);
 
 
-                FirebaseDatabase.getInstance().getReference("/Parks/" + newPark.getName()).child("Visitors").addChildEventListener(new ChildEventListener() {
-                    @Override
-                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                    }
-
+                FirebaseDatabase.getInstance().getReference("/Parks/" + newPark.getName()).child("Visitors").addValueEventListener(new ValueEventListener() {
                     @Override
-                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                        FirebaseDatabase.getInstance().getReference("/Parks/" + newPark.getName()).child("dogsAmount").setValue(dataSnapshot.getChildrenCount());
-                    }
-
-                    @Override
-                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                        FirebaseDatabase.getInstance().getReference("/Parks/" + newPark.getName()).child("dogsAmount").setValue(5);
-                    }
-
-                    @Override
-                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                       // if(dataSnapshot.getValue() == null){
+                        //    FirebaseDatabase.getInstance().getReference("/Parks/" + newPark.getName()).child("dogsAmount").setValue(0);
+                      //  }
+                      //  else
+                            FirebaseDatabase.getInstance().getReference("/Parks/" + newPark.getName()).child("dogsAmount").onDisconnect().setValue(0);
+                            FirebaseDatabase.getInstance().getReference("/Parks/" + newPark.getName()).child("dogsAmount").setValue(dataSnapshot.getChildrenCount());
 
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-
                     }
                 });
-
-//                FirebaseDatabase.getInstance().getReference("/Parks/" + newPark.getName()).child("Visitors").addValueEventListener(new ValueEventListener() {
-//                    @Override
-//                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                        if(dataSnapshot.getKey() != null)
-//                            FirebaseDatabase.getInstance().getReference("/Parks/" + newPark.getName()).child("dogsAmount").setValue(dataSnapshot.getChildrenCount());
-//                        else
-//                            FirebaseDatabase.getInstance().getReference("/Parks/" + newPark.getName()).child("dogsAmount").setValue(5);
-//                    }
-//
-//                    @Override
-//                    public void onCancelled(@NonNull DatabaseError databaseError) {
-//                    }
-//                });
-                FirebaseDatabase.getInstance().getReference("/Parks/" + newPark.getName()).child("Visitors").child(auth.getCurrentUser().getDisplayName()).onDisconnect().removeValue();
 
 
             }
@@ -156,4 +135,5 @@ public class DogsListActivity extends AppCompatActivity {
 
 
     }
+
 }
