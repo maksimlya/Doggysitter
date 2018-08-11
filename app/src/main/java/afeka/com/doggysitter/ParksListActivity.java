@@ -19,9 +19,11 @@ import com.firebase.geofire.GeoQueryEventListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -94,10 +96,26 @@ public class ParksListActivity extends AppCompatActivity {
         geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
             @Override
             public void onKeyEntered(String key, GeoLocation location) {
-                Park tmp = new Park();
+                final Park tmp = new Park();
                 tmp.setName(key);
                 tmp.setLocation(location);
-                tmp.setDogsAmount(0);
+                FirebaseDatabase.getInstance().getReference("/Parks/" + tmp.getName()).child("dogsAmount").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.getValue(Integer.class) == null)
+                            tmp.setDogsAmount(0);
+                        else {
+                            tmp.setDogsAmount(dataSnapshot.getValue(Integer.class));
+                            adapter.notifyDataSetChanged();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+               // tmp.setDogsAmount(0);
                 parks.add(tmp);
                 adapter.sort();
                 adapter.notifyDataSetChanged();

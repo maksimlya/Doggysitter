@@ -97,51 +97,26 @@ public class DogsListActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(oldPark.getName() != null) {
                     FirebaseDatabase.getInstance().getReference("/Parks/" + oldPark.getName()).child("Visitors").child(auth.getCurrentUser().getDisplayName()).removeValue();
-                    FirebaseDatabase.getInstance().getReference("/Parks/" + oldPark.getName()).child("dogsAmount").runTransaction(new Transaction.Handler() {
-                        @NonNull
-                        @Override
-                        public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
-                            Integer dogsAmount = mutableData.getValue(Integer.class);
-                            if(dogsAmount == null)
-                                mutableData.setValue(1);
-                            else
-                                mutableData.setValue(dogsAmount-1);
-                            return Transaction.success(mutableData);
-                        }
-
-                        @Override
-                        public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
-
-                        }
-                    });
                 }
                 FirebaseDatabase.getInstance().getReference("/Users/" + auth.getCurrentUser().getDisplayName()).child("Park").setValue(newPark);
                 HashMap<String,Object> newVisitor = new HashMap<>();
                 newVisitor.put(auth.getCurrentUser().getDisplayName(),newPark.getDistanceToPark());
                 FirebaseDatabase.getInstance().getReference("/Parks/" + newPark.getName()).child("Visitors").updateChildren(newVisitor);
-                FirebaseDatabase.getInstance().getReference("/Parks/" + newPark.getName()).child("dogsAmount").runTransaction(new Transaction.Handler() {
-                    @NonNull
+
+                FirebaseDatabase.getInstance().getReference("/Parks/" + newPark.getName()).child("Visitors").addValueEventListener(new ValueEventListener() {
                     @Override
-                    public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
-                        Integer dogsAmount = mutableData.getValue(Integer.class);
-                        if(dogsAmount == null)
-                            mutableData.setValue(1);
-                        else
-                            mutableData.setValue(dogsAmount+1);
-//                        HashMap<String,Object> ve = new HashMap<>();
-//                        ve.put("dogsAmount",dogsAmount);
-//                        FirebaseDatabase.getInstance().getReference("/Parks/" + newPark.getName()).onDisconnect().updateChildren(ve);
-                        return Transaction.success(mutableData);
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        FirebaseDatabase.getInstance().getReference("/Parks/" + newPark.getName()).child("dogsAmount").setValue(dataSnapshot.getChildrenCount());
                     }
 
                     @Override
-                    public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
-                        Toast.makeText(DogsListActivity.this,"Transaction success!",Toast.LENGTH_SHORT).show();
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
                     }
                 });
-
                 FirebaseDatabase.getInstance().getReference("/Parks/" + newPark.getName()).child("Visitors").child(auth.getCurrentUser().getDisplayName()).onDisconnect().removeValue();
-              //  FirebaseDatabase.getInstance().getReference("/Parks/" + newPark.getName()).onDisconnect()
+
+
             }
         });
 
