@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.firebase.geofire.GeoFire;
@@ -29,6 +30,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -39,6 +41,8 @@ public class DogsListActivity extends AppCompatActivity {
     private FirebaseAuth auth = FirebaseAuth.getInstance();
     private Button navigateToPark;
     private ImageView parkImage;
+    private ListView dogsList;
+    private ArrayList<Dog> dogsInPark;
 
 
     @Override
@@ -47,6 +51,11 @@ public class DogsListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_dogs_list);
         parkImage = findViewById(R.id.park_img);
         navigateToPark = findViewById(R.id.navigate_btn);
+        dogsList = findViewById(R.id.dogs_list);
+        dogsInPark = new ArrayList<>();
+
+        final DogAdapter adapter = new DogAdapter(this,dogsInPark);
+        dogsList.setAdapter(adapter);
 
         Intent intent = getIntent();
 
@@ -65,6 +74,47 @@ public class DogsListActivity extends AppCompatActivity {
                 String old = dataSnapshot.child("name").getValue(String.class);
                 if(old != null)
                     oldPark.setName(old);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        mDatabase.child("Visitors").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                final Dog temp = new Dog();
+                FirebaseDatabase.getInstance().getReference("/Users/" + dataSnapshot.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        temp.setName(dataSnapshot.child("Dog Name").getValue(String.class));
+                        temp.setPhoto(MainActivity.PHOTO_FILE_LOCATION);
+                        dogsInPark.add(temp);
+                        adapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
             }
 
             @Override

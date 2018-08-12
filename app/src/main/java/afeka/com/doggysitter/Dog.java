@@ -1,13 +1,33 @@
 package afeka.com.doggysitter;
 
-import android.widget.ImageView;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 public class Dog {
     private String name;
-    private ImageView photo;
+    private Bitmap photo;
 
-    public Dog(String name, ImageView photo){
+    public Dog(){
+    }
+
+    public Dog(String name, Bitmap photo){
         this.name = name;
         this.photo = photo;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Bitmap getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(String photoLoc) {
+        this.photo = BitmapFactory.decodeFile(photoLoc);
     }
 }
