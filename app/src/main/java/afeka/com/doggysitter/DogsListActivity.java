@@ -194,6 +194,10 @@ public class DogsListActivity extends AppCompatActivity {
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             FirebaseDatabase.getInstance().getReference("/Parks/" + newPark.getName()).child("dogsAmount").setValue(dataSnapshot.getChildrenCount());
 
+                            Intent intent = new Intent(DogsListActivity.this,Navigation.class);
+                            intent.putExtra("Name",newPark.getName());
+                            startActivity(intent);
+
                     }
 
                     @Override
