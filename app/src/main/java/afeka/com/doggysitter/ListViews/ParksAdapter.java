@@ -1,4 +1,4 @@
-package afeka.com.doggysitter;
+package afeka.com.doggysitter.ListViews;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,6 +9,9 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Collections;
+
+import afeka.com.doggysitter.ListViews.Park;
+import afeka.com.doggysitter.R;
 
 public class ParksAdapter extends BaseAdapter {
     private Context mContext;

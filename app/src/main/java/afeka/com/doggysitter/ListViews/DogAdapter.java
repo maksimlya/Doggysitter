@@ -1,4 +1,4 @@
-package afeka.com.doggysitter;
+package afeka.com.doggysitter.ListViews;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,6 +9,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+
+import afeka.com.doggysitter.ListViews.Dog;
+import afeka.com.doggysitter.R;
 
 public class DogAdapter extends BaseAdapter {
     private Context mContext;

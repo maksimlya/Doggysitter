@@ -40,13 +40,16 @@ public class ChooseCategory extends AppCompatActivity {
         Bitmap bitmap = BitmapFactory.decodeFile(MainActivity.PHOTO_FILE_LOCATION);
         profileImage.setImageBitmap(bitmap);
 
-        utilities.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(ChooseCategory.this,Test.class);
-                startActivity(intent);
-            }
-        });
+
+        utilities.setEnabled(false);
+
+//        utilities.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(ChooseCategory.this,Test.class);
+//                startActivity(intent);
+//            }
+//        });
 
         welcomeMessage.append(auth.getCurrentUser().getDisplayName());
 

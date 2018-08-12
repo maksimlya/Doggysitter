@@ -1,9 +1,11 @@
-package afeka.com.doggysitter;
+package afeka.com.doggysitter.ListViews;
 
 import android.location.Location;
 import android.support.annotation.NonNull;
 
 import com.firebase.geofire.GeoLocation;
+
+import afeka.com.doggysitter.MainActivity;
 
 public class Park implements Comparable<Park> {
     private String name;

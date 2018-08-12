@@ -1,4 +1,4 @@
-package afeka.com.doggysitter;
+package afeka.com.doggysitter.ListViews;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

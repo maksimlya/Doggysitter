@@ -18,6 +18,10 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -51,6 +55,7 @@ public class ProfileActivity extends AppCompatActivity {
     private EditText dogSpecie;
     private EditText dogAge;
     private ImageView choosePhoto;
+    private Button addressBtn;
    // private Button resetValues;
 
     private FileOutputStream outputStream;
@@ -74,6 +79,7 @@ public class ProfileActivity extends AppCompatActivity {
         dogSpecie = findViewById(R.id.specie_text);
         dogAge = findViewById(R.id.age_txt);
         choosePhoto = findViewById(R.id.photo_chooser);
+        addressBtn = findViewById(R.id.address_btn);
         Button saveToDB = findViewById(R.id.save_btn);
        // resetValues = findViewById(R.id.reset_btn);
 
@@ -96,6 +102,22 @@ public class ProfileActivity extends AppCompatActivity {
         Bitmap bitmap = BitmapFactory.decodeFile(MainActivity.PHOTO_FILE_LOCATION);
         choosePhoto.setImageBitmap(bitmap);
 
+
+        addressBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int PLACE_PICKER_REQUEST = 1;
+                PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+        try {
+            startActivityForResult(builder.build(ProfileActivity.this), PLACE_PICKER_REQUEST);
+        }   catch (GooglePlayServicesRepairableException e){
+            e.getConnectionStatusCode();
+        } catch (GooglePlayServicesNotAvailableException e){
+
+        }
+
+            }
+        });
 
         saveToDB.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -171,24 +193,24 @@ public class ProfileActivity extends AppCompatActivity {
         }
     };
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        EasyImage.handleActivityResult(requestCode, resultCode, data, this, new DefaultCallback() {
-            @Override
-            public void onImagePickerError(Exception e, EasyImage.ImageSource source, int type) {
-                //Some error handling
-            }
-
-            @Override
-            public void onImagesPicked(@NonNull List<File> imagesFiles, EasyImage.ImageSource source, int type) {
-                Bitmap myBitmap = BitmapFactory.decodeFile(imagesFiles.get(0).getAbsolutePath());
-                choosePhoto.setImageBitmap(myBitmap);
-                dPhoto = myBitmap;
-            }
-        });
-    }
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//
+//        EasyImage.handleActivityResult(requestCode, resultCode, data, this, new DefaultCallback() {
+//            @Override
+//            public void onImagePickerError(Exception e, EasyImage.ImageSource source, int type) {
+//                //Some error handling
+//            }
+//
+//            @Override
+//            public void onImagesPicked(@NonNull List<File> imagesFiles, EasyImage.ImageSource source, int type) {
+//                Bitmap myBitmap = BitmapFactory.decodeFile(imagesFiles.get(0).getAbsolutePath());
+//                choosePhoto.setImageBitmap(myBitmap);
+//                dPhoto = myBitmap;
+//            }
+//        });
+//    }
 
     private boolean isEmpty(EditText etText) {
         return etText.getText().toString().trim().length() <= 0;
