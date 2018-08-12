@@ -57,7 +57,9 @@
             android:name=".DogsListActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".Test" />
-        <activity android:name=".Navigation"></activity>
+        <activity android:name=".Navigation" />
+        <activity android:name=".OfferDoggysitterService" />
+        <activity android:name=".AskDoggysitterService"></activity>
     </application>
 
 </manifest>
