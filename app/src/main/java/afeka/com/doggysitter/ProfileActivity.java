@@ -227,7 +227,8 @@ public class ProfileActivity extends AppCompatActivity {
 
         if (requestCode == PLACE_PICKER_REQUEST) {
             if (resultCode == RESULT_OK) {
-                String addressName = PlacePicker.getPlace(this,data).getName().toString();
+                address = PlacePicker.getPlace(this,data).getName().toString();
+                addressBtn.setText(address);
                 LatLng coordinates = PlacePicker.getLatLngBounds(data).getCenter();
                 DatabaseReference ref = FirebaseDatabase.getInstance().getReference("/Geofire/Doggysitters");
                 GeoFire geoFire = new GeoFire(ref);
