@@ -19,9 +19,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -56,12 +61,17 @@ public class ProfileActivity extends AppCompatActivity {
     private EditText dogAge;
     private ImageView choosePhoto;
     private Button addressBtn;
+    private TextView addressView;
+    private EditText phoneNumber;
    // private Button resetValues;
+   int PLACE_PICKER_REQUEST = 1;
 
     private FileOutputStream outputStream;
 
 
     private String dName;
+    private  String address;
+    private String phone;
     private String dSpecie;
     private int dAge;
     private Bitmap dPhoto;
@@ -80,6 +90,7 @@ public class ProfileActivity extends AppCompatActivity {
         dogAge = findViewById(R.id.age_txt);
         choosePhoto = findViewById(R.id.photo_chooser);
         addressBtn = findViewById(R.id.address_btn);
+        phoneNumber = findViewById(R.id.phone_input);
         Button saveToDB = findViewById(R.id.save_btn);
        // resetValues = findViewById(R.id.reset_btn);
 
@@ -91,6 +102,8 @@ public class ProfileActivity extends AppCompatActivity {
                 dogName.setText(dataSnapshot.child("Dog Name").getValue(String.class));
                 dogSpecie.setText(dataSnapshot.child("Dog Specie").getValue(String.class));
                 dogAge.setText(String.valueOf(dataSnapshot.child("Dog Age").getValue(Integer.class)));
+                phoneNumber.setText(dataSnapshot.child("Phone Number").getValue(String.class));
+                addressBtn.setText(dataSnapshot.child("Address").getValue(String.class));
             }
 
             @Override
@@ -106,7 +119,6 @@ public class ProfileActivity extends AppCompatActivity {
         addressBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int PLACE_PICKER_REQUEST = 1;
                 PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
         try {
             startActivityForResult(builder.build(ProfileActivity.this), PLACE_PICKER_REQUEST);
@@ -122,10 +134,11 @@ public class ProfileActivity extends AppCompatActivity {
         saveToDB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (isEmpty(dogName) || isEmpty(dogSpecie) || isEmpty(dogAge)) {
+                if (isEmpty(dogName) || isEmpty(dogSpecie) || isEmpty(dogAge) || isEmpty(phoneNumber) || addressView.getText().equals("")) {
                     String str = "You can't have empty fields!!!";
                     Toast.makeText(ProfileActivity.this, str, Toast.LENGTH_SHORT).show();
                 } else {
+                    phone = ((EditText) findViewById(R.id.phone_input)).getText().toString();
                     dName = ((EditText) findViewById(R.id.dog_name_text)).getText().toString();
                     dAge = Integer.parseInt(((EditText) findViewById(R.id.age_txt)).getText().toString());
                     dSpecie = ((EditText) findViewById(R.id.specie_text)).getText().toString();
@@ -136,6 +149,8 @@ public class ProfileActivity extends AppCompatActivity {
                     mDatabase.child("Dog Name").setValue(dName);
                     mDatabase.child("Dog Age").setValue(dAge);
                     mDatabase.child("Dog Specie").setValue(dSpecie);
+                    mDatabase.child("Address").setValue(address);
+                    mDatabase.child("Phone Number").setValue(phone);
 
                     UploadTask uploadTask = storageReference.putBytes(data);
 
@@ -193,24 +208,43 @@ public class ProfileActivity extends AppCompatActivity {
         }
     };
 
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//
-//        EasyImage.handleActivityResult(requestCode, resultCode, data, this, new DefaultCallback() {
-//            @Override
-//            public void onImagePickerError(Exception e, EasyImage.ImageSource source, int type) {
-//                //Some error handling
-//            }
-//
-//            @Override
-//            public void onImagesPicked(@NonNull List<File> imagesFiles, EasyImage.ImageSource source, int type) {
-//                Bitmap myBitmap = BitmapFactory.decodeFile(imagesFiles.get(0).getAbsolutePath());
-//                choosePhoto.setImageBitmap(myBitmap);
-//                dPhoto = myBitmap;
-//            }
-//        });
-//    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        EasyImage.handleActivityResult(requestCode, resultCode, data, this, new DefaultCallback() {
+            @Override
+            public void onImagePickerError(Exception e, EasyImage.ImageSource source, int type) {
+                //Some error handling
+            }
+
+            @Override
+            public void onImagesPicked(@NonNull List<File> imagesFiles, EasyImage.ImageSource source, int type) {
+                Bitmap myBitmap = BitmapFactory.decodeFile(imagesFiles.get(0).getAbsolutePath());
+                choosePhoto.setImageBitmap(myBitmap);
+                dPhoto = myBitmap;
+            }
+        });
+
+        if (requestCode == PLACE_PICKER_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                String addressName = PlacePicker.getPlace(this,data).getName().toString();
+                addressView.setText(addressName);
+                LatLng coordinates = PlacePicker.getLatLngBounds(data).getCenter();
+                DatabaseReference ref = FirebaseDatabase.getInstance().getReference("/Geofire/Doggysitters");
+                GeoFire geoFire = new GeoFire(ref);
+                geoFire.setLocation(auth.getCurrentUser().getDisplayName(), new GeoLocation(coordinates.latitude, coordinates.longitude), new GeoFire.CompletionListener() {
+                    @Override
+                    public void onComplete(String key, DatabaseError error) {
+                        Toast.makeText(ProfileActivity.this,"Success!",Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }
+
+    }
+
+
 
     private boolean isEmpty(EditText etText) {
         return etText.getText().toString().trim().length() <= 0;

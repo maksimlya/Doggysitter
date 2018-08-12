@@ -25,6 +25,7 @@ public class ChooseCategory extends AppCompatActivity {
     Button park;
     Button utilities;
     ImageView profileImage;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +40,7 @@ public class ChooseCategory extends AppCompatActivity {
         welcomeMessage = findViewById(R.id.welcome_view);
         Bitmap bitmap = BitmapFactory.decodeFile(MainActivity.PHOTO_FILE_LOCATION);
         profileImage.setImageBitmap(bitmap);
+
 
 
         utilities.setEnabled(false);
