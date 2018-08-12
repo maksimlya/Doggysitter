@@ -61,7 +61,6 @@ public class ProfileActivity extends AppCompatActivity {
     private EditText dogAge;
     private ImageView choosePhoto;
     private Button addressBtn;
-    private TextView addressView;
     private EditText phoneNumber;
    // private Button resetValues;
    int PLACE_PICKER_REQUEST = 1;
@@ -134,7 +133,7 @@ public class ProfileActivity extends AppCompatActivity {
         saveToDB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (isEmpty(dogName) || isEmpty(dogSpecie) || isEmpty(dogAge) || isEmpty(phoneNumber) || addressView.getText().equals("")) {
+                if (isEmpty(dogName) || isEmpty(dogSpecie) || isEmpty(dogAge) || isEmpty(phoneNumber) || addressBtn.getText().equals("Choose Address")) {
                     String str = "You can't have empty fields!!!";
                     Toast.makeText(ProfileActivity.this, str, Toast.LENGTH_SHORT).show();
                 } else {
@@ -229,7 +228,6 @@ public class ProfileActivity extends AppCompatActivity {
         if (requestCode == PLACE_PICKER_REQUEST) {
             if (resultCode == RESULT_OK) {
                 String addressName = PlacePicker.getPlace(this,data).getName().toString();
-                addressView.setText(addressName);
                 LatLng coordinates = PlacePicker.getLatLngBounds(data).getCenter();
                 DatabaseReference ref = FirebaseDatabase.getInstance().getReference("/Geofire/Doggysitters");
                 GeoFire geoFire = new GeoFire(ref);
