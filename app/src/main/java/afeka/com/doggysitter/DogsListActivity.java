@@ -15,7 +15,9 @@ import android.widget.Toast;
 
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -26,10 +28,12 @@ import com.google.firebase.database.MutableData;
 import com.google.firebase.database.OnDisconnect;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
@@ -90,11 +94,33 @@ public class DogsListActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         temp.setName(dataSnapshot.child("Dog Name").getValue(String.class));
-                        temp.setPhoto(MainActivity.PHOTO_FILE_LOCATION);
-                        dogsInPark.add(temp);
-                        adapter.notifyDataSetChanged();
-                    }
+                        String path = getFilesDir() + "/dogsPhotos/" + dataSnapshot.getKey() + "/photo";
+                        final File dogPhoto = new File(path);
 
+                        if (!dogPhoto.exists()) {                                              // If profile photo for current account does not exist on the phone memory
+                            dogPhoto.getParentFile().mkdirs();
+                            try {
+                                dogPhoto.createNewFile();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+
+                            FirebaseStorage.getInstance().getReference("/" + dataSnapshot.getKey() + "/profilePhoto.png").getFile(dogPhoto).addOnCompleteListener(new OnCompleteListener<FileDownloadTask.TaskSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<FileDownloadTask.TaskSnapshot> task) {
+                                    temp.setPhoto(dogPhoto.getAbsolutePath());
+                                    dogsInPark.add(temp);
+                                    adapter.notifyDataSetChanged();
+                                }
+                            });
+
+                        } else {
+                            temp.setPhoto(dogPhoto.getAbsolutePath());
+                            dogsInPark.add(temp);
+                            adapter.notifyDataSetChanged();
+                        }
+                    }
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
 
