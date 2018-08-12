@@ -86,6 +86,10 @@ public class DogsListActivity extends AppCompatActivity {
                 }
                 else
                     newPark.setDogsAmount(Objects.requireNonNull(dataSnapshot.child("dogsAmount").getValue(Integer.class)));
+
+
+                FirebaseDatabase.getInstance().getReference("/Parks/" + newPark.getName()).child("dogsAmount").onDisconnect().setValue(dataSnapshot.child("Visitors").getChildrenCount());
+
                  }
 
             @Override
@@ -112,11 +116,6 @@ public class DogsListActivity extends AppCompatActivity {
                 FirebaseDatabase.getInstance().getReference("/Parks/" + newPark.getName()).child("Visitors").addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                       // if(dataSnapshot.getValue() == null){
-                        //    FirebaseDatabase.getInstance().getReference("/Parks/" + newPark.getName()).child("dogsAmount").setValue(0);
-                      //  }
-                      //  else
-                            FirebaseDatabase.getInstance().getReference("/Parks/" + newPark.getName()).child("dogsAmount").onDisconnect().setValue(0);
                             FirebaseDatabase.getInstance().getReference("/Parks/" + newPark.getName()).child("dogsAmount").setValue(dataSnapshot.getChildrenCount());
 
                     }
