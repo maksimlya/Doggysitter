@@ -10,10 +10,6 @@ public class Dog {
     public Dog(){
     }
 
-    public Dog(String name, Bitmap photo){
-        this.name = name;
-        this.photo = photo;
-    }
 
     public String getName() {
         return name;
