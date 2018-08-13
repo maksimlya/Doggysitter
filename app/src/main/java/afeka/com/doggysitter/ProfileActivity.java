@@ -44,8 +44,8 @@ import pl.tajchert.nammu.PermissionCallback;
 
 public class ProfileActivity extends AppCompatActivity {
     final FirebaseAuth auth = FirebaseAuth.getInstance();
-    public final String fname = Objects.requireNonNull(auth.getCurrentUser()).getDisplayName() + "/profilePhoto.png";
-    final FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
+    public final String fname = Objects.requireNonNull(auth.getCurrentUser()).getDisplayName() + "/profilePhoto.png";                           // Path to profile photo
+    final FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();                                                                      // Firebase storage reference
     private StorageReference storageReference = firebaseStorage.getReference(fname);
     final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("Users/" + Objects.requireNonNull(auth.getCurrentUser().getDisplayName()));
     private EditText dogName;
@@ -54,10 +54,9 @@ public class ProfileActivity extends AppCompatActivity {
     private ImageView choosePhoto;
     private Button addressBtn;
     private EditText phoneNumber;
-   int PLACE_PICKER_REQUEST = 1;
+    int PLACE_PICKER_REQUEST = 1;
 
-    private FileOutputStream outputStream;
-
+    private FileOutputStream outputStream;                  // Output stream to download profile photo to phone's local memory
 
     private String dName;
     private  String address;
@@ -83,16 +82,16 @@ public class ProfileActivity extends AppCompatActivity {
         phoneNumber = findViewById(R.id.phone_input);
         Button saveToDB = findViewById(R.id.save_btn);
 
-       dPhoto = BitmapFactory.decodeFile(MainActivity.PHOTO_FILE_LOCATION);
+       dPhoto = BitmapFactory.decodeFile(MainActivity.PHOTO_FILE_LOCATION);             // Decode image from local storage
 
-        mDatabase.addValueEventListener(new ValueEventListener() {
+        mDatabase.addValueEventListener(new ValueEventListener() {                          // Get current profile values from firebase
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                dogName.setText(dataSnapshot.child("Dog Name").getValue(String.class));
-                dogSpecie.setText(dataSnapshot.child("Dog Specie").getValue(String.class));
-                dogAge.setText(String.valueOf(dataSnapshot.child("Dog Age").getValue(Integer.class)));
-                phoneNumber.setText(dataSnapshot.child("Phone Number").getValue(String.class));
-                addressBtn.setText(dataSnapshot.child("Address").getValue(String.class));
+                dogName.setText(dataSnapshot.child("Dog Name").getValue(String.class));                         // Name
+                dogSpecie.setText(dataSnapshot.child("Dog Specie").getValue(String.class));                     // Specie
+                dogAge.setText(String.valueOf(dataSnapshot.child("Dog Age").getValue(Integer.class)));          // Age
+                phoneNumber.setText(dataSnapshot.child("Phone Number").getValue(String.class));                 // Phone Number
+                addressBtn.setText(dataSnapshot.child("Address").getValue(String.class));                       // Address
             }
 
             @Override
@@ -101,16 +100,16 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
-        Bitmap bitmap = BitmapFactory.decodeFile(MainActivity.PHOTO_FILE_LOCATION);
-        choosePhoto.setImageBitmap(bitmap);
+        //Bitmap bitmap = BitmapFactory.decodeFile(MainActivity.PHOTO_FILE_LOCATION);
+        choosePhoto.setImageBitmap(dPhoto);                                                                     // Set profile photo from the decoded bitmap
 
 
         addressBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+                PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();                        // Use Google Places API to find address
         try {
-            startActivityForResult(builder.build(ProfileActivity.this), PLACE_PICKER_REQUEST);
+            startActivityForResult(builder.build(ProfileActivity.this), PLACE_PICKER_REQUEST);      // The result is taken care in 'Activity result' function
         }   catch (GooglePlayServicesRepairableException e){
             e.getConnectionStatusCode();
         } catch (GooglePlayServicesNotAvailableException e){
@@ -120,10 +119,10 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
-        saveToDB.setOnClickListener(new View.OnClickListener() {
+        saveToDB.setOnClickListener(new View.OnClickListener() {                                            // Save updated profile values to Firebase database
             @Override
             public void onClick(View view) {
-                if (isEmpty(dogName) || isEmpty(dogSpecie) || isEmpty(dogAge) || isEmpty(phoneNumber) || addressBtn.getText().equals("Choose Address")) {
+                if (isEmpty(dogName) || isEmpty(dogSpecie) || isEmpty(dogAge) || isEmpty(phoneNumber) || addressBtn.getText().equals("Choose Address")) {       // Checks for empty fields in profile form
                     String str = "You can't have empty fields!!!";
                     Toast.makeText(ProfileActivity.this, str, Toast.LENGTH_SHORT).show();
                 } else {
@@ -136,13 +135,13 @@ public class ProfileActivity extends AppCompatActivity {
                     dPhoto.compress(Bitmap.CompressFormat.PNG,100,baos);
                     byte[] data = baos.toByteArray();
 
-                    mDatabase.child("Dog Name").setValue(dName);
+                    mDatabase.child("Dog Name").setValue(dName);                                                    // Parse profile's values and store them in firebase database, and the photo is stored in firebase storage.
                     mDatabase.child("Dog Age").setValue(dAge);
                     mDatabase.child("Dog Specie").setValue(dSpecie);
                     mDatabase.child("Address").setValue(address);
                     mDatabase.child("Phone Number").setValue(phone);
 
-                    storageReference.putBytes(data);
+                    storageReference.putBytes(data);                        // Uploads the photo to firebase storage.
 
                     try {
                         File a = new File(MainActivity.PHOTO_FILE_LOCATION);
@@ -151,7 +150,7 @@ public class ProfileActivity extends AppCompatActivity {
                         a.createNewFile();
 
                             outputStream = new FileOutputStream(a, false);
-                            outputStream.write(data);
+                            outputStream.write(data);                                           // Store the new profile photo in phone memory.
                             outputStream.close();
 
                     } catch (FileNotFoundException e){
@@ -164,7 +163,7 @@ public class ProfileActivity extends AppCompatActivity {
 
 
                     Toast.makeText(ProfileActivity.this,"Dog name: " + dName + ", specie: " + dSpecie + ", age: " + dAge + " saved!!!",Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(ProfileActivity.this,ChooseCategory.class);
+                    Intent intent = new Intent(ProfileActivity.this,ChooseCategory.class);                                                                              // Show success message and go back to Categories activity.
                     startActivity(intent);
                     finish();
 
@@ -176,7 +175,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         choosePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v) {                                                                   // Checks for storage permissions and go to photo chooser in permissionStorageCallback
                 Nammu.init(ProfileActivity.this);
                 Nammu.askForPermission(ProfileActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE,permissionStorageCallback);
             }
@@ -184,7 +183,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {                   // 'Nammu' = permissions helper
         Nammu.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
@@ -192,7 +191,7 @@ public class ProfileActivity extends AppCompatActivity {
         @Override
         public void permissionGranted() {
             Toast.makeText(ProfileActivity.this,"Permission Granted",Toast.LENGTH_SHORT).show();
-            EasyImage.openGallery(ProfileActivity.this, 1);
+            EasyImage.openGallery(ProfileActivity.this, 1);                                                 // EasyImage = image picker helper
         }
 
         @Override
@@ -212,14 +211,14 @@ public class ProfileActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onImagesPicked(@NonNull List<File> imagesFiles, EasyImage.ImageSource source, int type) {
+            public void onImagesPicked(@NonNull List<File> imagesFiles, EasyImage.ImageSource source, int type) {           // Set the picked image.
                 Bitmap myBitmap = BitmapFactory.decodeFile(imagesFiles.get(0).getAbsolutePath());
                 choosePhoto.setImageBitmap(myBitmap);
-                dPhoto = myBitmap;
+                dPhoto = myBitmap;                                                                                          // Store it in bitmap
             }
         });
 
-        if (requestCode == PLACE_PICKER_REQUEST) {
+        if (requestCode == PLACE_PICKER_REQUEST) {                                                      // This part takes care for address picker from 'Google Places API'
             if (resultCode == RESULT_OK) {
                 address = PlacePicker.getPlace(this,data).getName().toString();
                 addressBtn.setText(address);
@@ -230,7 +229,7 @@ public class ProfileActivity extends AppCompatActivity {
                 if(user != null)
                 geoFire.setLocation(user, new GeoLocation(coordinates.latitude, coordinates.longitude), new GeoFire.CompletionListener() {
                     @Override
-                    public void onComplete(String key, DatabaseError error) {
+                    public void onComplete(String key, DatabaseError error) {                       // Store in Geofire place for easy distance checks
                         Toast.makeText(ProfileActivity.this,"Success!",Toast.LENGTH_SHORT).show();
                     }
                 });

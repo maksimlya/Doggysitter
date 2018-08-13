@@ -47,29 +47,29 @@ public class ParksListActivity extends AppCompatActivity {
         GeoFire geoFire = new GeoFire(ref);
         parks = new ArrayList<>();
         final ParksAdapter adapter = new ParksAdapter(this,parks);
-        parksList.setAdapter(adapter);
+        parksList.setAdapter(adapter);                                                          // Set Parks List
 
         parksList.setClickable(true);
         parksList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {                      // Set each row in list clickable
                 Park tmp = (Park) parent.getAdapter().getItem(position);
                 final Intent intent = new Intent(ParksListActivity.this, DogsListActivity.class);
-                intent.putExtra("Name", tmp.getName());
+                intent.putExtra("Name", tmp.getName());                                                         // Add park name to intent
                 final File localFile = new File(getFilesDir() + "/parkPhotos/" + tmp.getName());
                 if (!localFile.exists()) {                                              // If profile photo for current account does not exist on the phone memory
                     localFile.getParentFile().mkdirs();
 
                     try {
                        localFile.createNewFile();
-                        storage = FirebaseStorage.getInstance().getReference("/Snapshots/" + tmp.getName());
+                        storage = FirebaseStorage.getInstance().getReference("/Snapshots/" + tmp.getName());            // Get the park's nearby map from firebase storage.
                             storage.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                 @Override
                                 public void onSuccess(Uri uri) {
                                     storage.getFile(localFile).addOnCompleteListener(new OnCompleteListener<FileDownloadTask.TaskSnapshot>() {
                                         @Override
                                         public void onComplete(@NonNull Task<FileDownloadTask.TaskSnapshot> task) {
-                                            startActivity(intent);
+                                            startActivity(intent);                                                              // Fire next activity with the choosen park's name
                                         }
                                     });
                                 }
@@ -78,7 +78,7 @@ public class ParksListActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 } else {
-                    startActivity(intent);
+                    startActivity(intent);                                  // If photo of the park already downloaded to local storage, fire the intent right away
                 }
 
 
@@ -89,9 +89,9 @@ public class ParksListActivity extends AppCompatActivity {
 
         GeoLocation myLocation = new GeoLocation(MainActivity.MY_LOCATION.latitude,MainActivity.MY_LOCATION.longitude);
 
-        GeoQuery geoQuery = geoFire.queryAtLocation(myLocation,10);
+        GeoQuery geoQuery = geoFire.queryAtLocation(myLocation,10);                                                 // Uses Geofire helper to find nearby parks in radius
 
-        geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
+        geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {                                 // Results of query
             @Override
             public void onKeyEntered(String key, GeoLocation location) {
                 final Park tmp = new Park();
@@ -106,7 +106,7 @@ public class ParksListActivity extends AppCompatActivity {
                             Integer dogsAmount = dataSnapshot.getValue(Integer.class);
                             if(dogsAmount != null) {
                                 tmp.setDogsAmount(dogsAmount);
-                                adapter.notifyDataSetChanged();
+                                adapter.notifyDataSetChanged();                                         // Update the list in realtime for any changes.
                             }
                         }
                     }
@@ -116,10 +116,9 @@ public class ParksListActivity extends AppCompatActivity {
 
                     }
                 });
-               // tmp.setDogsAmount(0);
                 parks.add(tmp);
                 adapter.sort();
-                adapter.notifyDataSetChanged();
+                adapter.notifyDataSetChanged();                                         // Adds the park to the list
 
             }
 

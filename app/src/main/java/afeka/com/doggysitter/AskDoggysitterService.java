@@ -60,10 +60,6 @@ public class AskDoggysitterService extends AppCompatActivity {
         });
 
 
-
-
-
-
         geoFire = new GeoFire(FirebaseDatabase.getInstance().getReference("/Geofire/Doggysitters"));
             filterBtn.setOnClickListener(new View.OnClickListener() {
                 @Override

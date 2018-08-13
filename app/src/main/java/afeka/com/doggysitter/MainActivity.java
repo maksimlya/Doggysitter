@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             startActivityForResult(
                 AuthUI.getInstance()
                         .createSignInIntentBuilder()
-                        .setAvailableProviders(providers)
+                        .setAvailableProviders(providers)                           // Enables google + email sign-in providers
                         .setLogo(R.drawable.doggybackground)
                         .setIsSmartLockEnabled(false)
                         .build(),
@@ -76,10 +76,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         final Intent loggedIn = new Intent(this,ChooseCategory.class);
         if(requestCode == RC_SIGN_IN){
             if(resultCode == RESULT_OK){
-                    F_NAME = Objects.requireNonNull(auth.getCurrentUser()).getDisplayName() + "/profilePhoto.png";
-                    FirebaseDatabase.getInstance().getReference("/Users/" + auth.getCurrentUser().getDisplayName()).child("isOnline").setValue(true);
-                    FirebaseDatabase.getInstance().getReference("/Users/" + auth.getCurrentUser().getDisplayName()).child("isOnline").onDisconnect().setValue(false);
-                    FirebaseDatabase.getInstance().getReference("/Users/" + auth.getCurrentUser().getDisplayName()).child("Park").onDisconnect().removeValue();
+                    F_NAME = Objects.requireNonNull(auth.getCurrentUser()).getDisplayName() + "/profilePhoto.png";                                          // Creates local file with profile photo
+                    FirebaseDatabase.getInstance().getReference("/Users/" + auth.getCurrentUser().getDisplayName()).child("isOnline").setValue(true);    // Set user as online in firebase
+                    FirebaseDatabase.getInstance().getReference("/Users/" + auth.getCurrentUser().getDisplayName()).child("isOnline").onDisconnect().setValue(false);       // On disconnect set user as offline
+                    FirebaseDatabase.getInstance().getReference("/Users/" + auth.getCurrentUser().getDisplayName()).child("Park").onDisconnect().removeValue();             // On disconnect remove the user from any park is being in
                     FirebaseDatabase.getInstance().goOnline();
 
 
@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         }
     }
 
-    public void getLocation(){
+    public void getLocation(){                                                                      // Set last known location as the current location
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
@@ -154,6 +154,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     @Override
     public void onLocationChanged(Location location) {
-        MY_LOCATION = new LatLng(location.getLatitude(),location.getLongitude());
+        MY_LOCATION = new LatLng(location.getLatitude(),location.getLongitude());       // Will store in MY_LOCATION var
     }
 }
