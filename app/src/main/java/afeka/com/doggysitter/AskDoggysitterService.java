@@ -44,7 +44,7 @@ public class AskDoggysitterService extends AppCompatActivity {
         adapter = new DoggysitterOfferAdapter(this, offers);
         offersList.setAdapter(adapter);
 
-        FirebaseDatabase.getInstance().getReference("Geofire/Doggysitters/" + auth.getCurrentUser().getDisplayName() + "/l").addListenerForSingleValueEvent(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference("Geofire/Doggysitters/" + Objects.requireNonNull(auth.getCurrentUser()).getDisplayName() + "/l").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Double lat = dataSnapshot.child("0").getValue(Double.class);
@@ -72,19 +72,16 @@ public class AskDoggysitterService extends AppCompatActivity {
                     geoQuery = geoFire.queryAtLocation(myLocation,Double.parseDouble(filterView.getText().toString()));
                     geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
                         @Override
-                        public void onKeyEntered(String key, final GeoLocation location) {
+                        public void onKeyEntered(final String key, final GeoLocation location) {
                             if(!key.equals(auth.getCurrentUser().getDisplayName()))
-                                ref.addValueEventListener(new ValueEventListener() {
+                                ref.child(key).addValueEventListener(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        for(DataSnapshot doggySitter : dataSnapshot.getChildren()){
-                                            if(Objects.equals(doggySitter.getKey(), auth.getCurrentUser().getDisplayName()))
-                                                continue;
-                                            for(DataSnapshot month : doggySitter.getChildren()){
+                                            for(DataSnapshot month : dataSnapshot.getChildren()){
                                                 for(DataSnapshot day : month.getChildren()){
                                                     for (DataSnapshot instance : day.getChildren()){
                                                         final DoggysitterOffer temp = new DoggysitterOffer();
-                                                        temp.setName(doggySitter.getKey());
+                                                        temp.setName(key);
                                                         temp.setMonth(Integer.parseInt(month.getKey()));
                                                         temp.setDay(Integer.parseInt(day.getKey()));
                                                         temp.setStartHour(Integer.parseInt(instance.getKey()));
@@ -109,7 +106,7 @@ public class AskDoggysitterService extends AppCompatActivity {
                                                     }
                                                 }
                                             }
-                                        }
+
                                     }
 
                                     @Override
