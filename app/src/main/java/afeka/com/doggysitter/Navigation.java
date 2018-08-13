@@ -17,7 +17,6 @@ import com.google.firebase.database.ValueEventListener;
 import afeka.com.doggysitter.ListViews.Park;
 
 public class Navigation extends AppCompatActivity {
-    private DatabaseReference mDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,14 +24,19 @@ public class Navigation extends AppCompatActivity {
         setContentView(R.layout.activity_navigation);
         Intent intent = getIntent();
         String pName = intent.getStringExtra("Name");
-        mDatabase = FirebaseDatabase.getInstance().getReference("/Parks/" + pName);
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("/Parks/" + pName);
         final Park destPark = new Park();
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 destPark.setName(dataSnapshot.getKey());
-                destPark.setLocation(new GeoLocation(dataSnapshot.child("0").getValue(Double.class),dataSnapshot.child("1").getValue(Double.class)));
-                destPark.setDogsAmount(dataSnapshot.child("dogsAmount").getValue(Integer.class));
+                Double lattitude = dataSnapshot.child("0").getValue(Double.class);
+                Double longitude = dataSnapshot.child("1").getValue(Double.class);
+                if(lattitude != null && longitude != null)
+                    destPark.setLocation(new GeoLocation(lattitude,longitude));
+                Integer dogsAmount = dataSnapshot.child("dogsAmount").getValue(Integer.class);
+                if(dogsAmount != null)
+                    destPark.setDogsAmount(dogsAmount);
                 Toast.makeText(Navigation.this,"Navigating to " + destPark.getName() + " park at Lat: " + destPark.getLocation().latitude + ", Lon: " + destPark.getLocation().longitude,Toast.LENGTH_SHORT).show();
 
 

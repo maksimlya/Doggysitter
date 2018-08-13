@@ -1,27 +1,23 @@
 package afeka.com.doggysitter.ListViews;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
-
 import java.util.ArrayList;
 import java.util.Collections;
-
-import afeka.com.doggysitter.ListViews.Park;
 import afeka.com.doggysitter.R;
 
 public class ParksAdapter extends BaseAdapter {
-    private Context mContext;
     private LayoutInflater mInflater;
     private ArrayList<Park> mDataSource;
 
     public ParksAdapter(Context context, ArrayList<Park> items) {
-        mContext = context;
         mDataSource = items;
-        mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
     @Override
     public Object getItem(int position) {
@@ -37,14 +33,14 @@ public class ParksAdapter extends BaseAdapter {
     }
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View rowView = mInflater.inflate(R.layout.parks_list_item, parent, false);
+        @SuppressLint("ViewHolder") View rowView = mInflater.inflate(R.layout.parks_list_item, parent, false);
 
         TextView parkNameView =
-                (TextView) rowView.findViewById(R.id.park_name_view);
+                rowView.findViewById(R.id.park_name_view);
         TextView dogsAmountView =
-                (TextView) rowView.findViewById(R.id.dogs_amount_view);
+                rowView.findViewById(R.id.dogs_amount_view);
         TextView distanceView =
-                (TextView) rowView.findViewById(R.id.distance_view);
+                rowView.findViewById(R.id.distance_view);
         Park park = (Park) getItem(position);
         parkNameView.setText(park.getName());
         dogsAmountView.append(String.valueOf(park.getDogsAmount()));

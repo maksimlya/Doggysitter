@@ -35,18 +35,16 @@ import afeka.com.doggysitter.ListViews.ParksAdapter;
 public class ParksListActivity extends AppCompatActivity {
     private DatabaseReference ref = FirebaseDatabase.getInstance().getReference("/Geofire/Parks");
     private StorageReference storage;
-    private GeoFire geoFire;
     private ArrayList<Park> parks;
-    private ListView parksList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_parks_list);
 
-        parksList = findViewById(R.id.parks_list);
+        ListView parksList = findViewById(R.id.parks_list);
 
-        geoFire  = new GeoFire(ref);
+        GeoFire geoFire = new GeoFire(ref);
         parks = new ArrayList<>();
         final ParksAdapter adapter = new ParksAdapter(this,parks);
         parksList.setAdapter(adapter);
@@ -61,20 +59,21 @@ public class ParksListActivity extends AppCompatActivity {
                 final File localFile = new File(getFilesDir() + "/parkPhotos/" + tmp.getName());
                 if (!localFile.exists()) {                                              // If profile photo for current account does not exist on the phone memory
                     localFile.getParentFile().mkdirs();
+
                     try {
-                        localFile.createNewFile();
+                       localFile.createNewFile();
                         storage = FirebaseStorage.getInstance().getReference("/Snapshots/" + tmp.getName());
-                        storage.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(Uri uri) {
-                                storage.getFile(localFile).addOnCompleteListener(new OnCompleteListener<FileDownloadTask.TaskSnapshot>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<FileDownloadTask.TaskSnapshot> task) {
-                                        startActivity(intent);
-                                    }
-                                });
-                            }
-                        });
+                            storage.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    storage.getFile(localFile).addOnCompleteListener(new OnCompleteListener<FileDownloadTask.TaskSnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<FileDownloadTask.TaskSnapshot> task) {
+                                            startActivity(intent);
+                                        }
+                                    });
+                                }
+                            });
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -104,8 +103,11 @@ public class ParksListActivity extends AppCompatActivity {
                         if(dataSnapshot.getValue(Integer.class) == null)
                             tmp.setDogsAmount(0);
                         else {
-                            tmp.setDogsAmount(dataSnapshot.getValue(Integer.class));
-                            adapter.notifyDataSetChanged();
+                            Integer dogsAmount = dataSnapshot.getValue(Integer.class);
+                            if(dogsAmount != null) {
+                                tmp.setDogsAmount(dogsAmount);
+                                adapter.notifyDataSetChanged();
+                            }
                         }
                     }
 

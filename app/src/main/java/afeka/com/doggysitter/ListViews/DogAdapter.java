@@ -1,5 +1,6 @@
 package afeka.com.doggysitter.ListViews;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,21 +8,16 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import java.util.ArrayList;
-
-import afeka.com.doggysitter.ListViews.Dog;
 import afeka.com.doggysitter.R;
 
 public class DogAdapter extends BaseAdapter {
-    private Context mContext;
     private LayoutInflater mInflater;
     private ArrayList<Dog> mDataSource;
 
     public DogAdapter(Context context, ArrayList<Dog> items){
-        mContext = context;
         mDataSource = items;
-        mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override
@@ -42,12 +38,12 @@ public class DogAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View rowView = mInflater.inflate(R.layout.dogs_list_item, parent, false);
+        @SuppressLint("ViewHolder") View rowView = mInflater.inflate(R.layout.dogs_list_item, parent, false);
 
         TextView dogNameView =
-                (TextView) rowView.findViewById(R.id.dog_name_view);
+                rowView.findViewById(R.id.dog_name_view);
         ImageView dogPhotoView =
-                (ImageView) rowView.findViewById(R.id.dog_photo_view);
+                rowView.findViewById(R.id.dog_photo_view);
         Dog dog = (Dog) getItem(position);
         dogNameView.setText(dog.getName());
         dogPhotoView.setImageBitmap(dog.getPhoto());

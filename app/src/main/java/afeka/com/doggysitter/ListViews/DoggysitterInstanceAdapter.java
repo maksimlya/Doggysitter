@@ -1,5 +1,6 @@
 package afeka.com.doggysitter.ListViews;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,14 +16,12 @@ import afeka.com.doggysitter.R;
 
 public class DoggysitterInstanceAdapter extends BaseAdapter {
     private HashSet<DoggysitterInstance> sources;
-    private Context mContext;
     private ArrayList<DoggysitterInstance> mDataSource;
     private LayoutInflater mInflater;
     public DoggysitterInstanceAdapter(Context context, ArrayList<DoggysitterInstance> items){
-        mContext = context;
         mDataSource = items;
         sources = new HashSet<>(items);
-        mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override
@@ -51,12 +50,12 @@ public class DoggysitterInstanceAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View rowView = mInflater.inflate(R.layout.instance_list_item, parent, false);
+        @SuppressLint("ViewHolder") View rowView = mInflater.inflate(R.layout.instance_list_item, parent, false);
 
         TextView dateView =
-                (TextView) rowView.findViewById(R.id.date_view);
+                 rowView.findViewById(R.id.date_view);
         TextView hoursView =
-                (TextView) rowView.findViewById(R.id.hours_view);
+                 rowView.findViewById(R.id.hours_view);
 
         DoggysitterInstance instance = (DoggysitterInstance) getItem(position);
         dateView.setText(instance.getDate());

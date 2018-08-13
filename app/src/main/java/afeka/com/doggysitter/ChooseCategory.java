@@ -10,14 +10,14 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.Objects;
 
 
 public class ChooseCategory extends AppCompatActivity {
     final FirebaseAuth auth = FirebaseAuth.getInstance();
-    public final String fname = auth.getCurrentUser().getDisplayName() + "/profilePhoto.png";
     Button logOut;
     Button profile;
     Button doggysitter;
@@ -42,18 +42,10 @@ public class ChooseCategory extends AppCompatActivity {
         profileImage.setImageBitmap(bitmap);
 
 
-
         utilities.setEnabled(false);
 
-//        utilities.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(ChooseCategory.this,Test.class);
-//                startActivity(intent);
-//            }
-//        });
 
-        welcomeMessage.append(auth.getCurrentUser().getDisplayName());
+        welcomeMessage.append(Objects.requireNonNull(auth.getCurrentUser()).getDisplayName());
 
 
         doggysitter.setOnClickListener(new View.OnClickListener() {

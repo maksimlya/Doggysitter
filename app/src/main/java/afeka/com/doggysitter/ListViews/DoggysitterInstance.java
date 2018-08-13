@@ -11,36 +11,18 @@ public class DoggysitterInstance implements Comparable<DoggysitterInstance> {
     private int endHour;
 
     public DoggysitterInstance(){
-
-    }
-
-
-    public int getMonth() {
-        return month;
     }
 
     public void setMonth(int month) {
         this.month = month;
     }
 
-    public int getDay() {
-        return day;
-    }
-
     public void setDay(int day) {
         this.day = day;
     }
 
-    public int getStartHour() {
-        return startHour;
-    }
-
     public void setStartHour(int startHour) {
         this.startHour = startHour;
-    }
-
-    public int getEndHour() {
-        return endHour;
     }
 
     public void setEndHour(int endHour) {
@@ -48,24 +30,20 @@ public class DoggysitterInstance implements Comparable<DoggysitterInstance> {
     }
 
     public String getDate(){
-        StringBuffer sb = new StringBuffer();
-        sb.append(this.day);
-        sb.append('/');
-        sb.append(month);
-        sb.append('/');
-        sb.append(2018);
 
-        return sb.toString();
+        return String.valueOf(this.day) +
+                '/' +
+                month +
+                '/' +
+                2018;
     }
 
     public String getHours(){
-        StringBuffer sb = new StringBuffer();
-        sb.append("From ");
-        sb.append(this.startHour);
-        sb.append(" To");
-        sb.append(this.endHour);
 
-        return sb.toString();
+        return "From " +
+                this.startHour + ":00" +
+                " To " +
+                this.endHour + ":00";
     }
 
     @Override

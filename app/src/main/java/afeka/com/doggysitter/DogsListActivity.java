@@ -11,7 +11,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
-
 import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -24,26 +23,18 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
-
 import afeka.com.doggysitter.ListViews.Dog;
 import afeka.com.doggysitter.ListViews.DogAdapter;
 import afeka.com.doggysitter.ListViews.Park;
 
 public class DogsListActivity extends AppCompatActivity {
-    private String fname;
-    private StorageReference firebaseStorage;
     private DatabaseReference mDatabase;
     private FirebaseAuth auth = FirebaseAuth.getInstance();
-    private Button navigateToPark;
-    private ImageView parkImage;
-    private ListView dogsList;
     private ArrayList<Dog> dogsInPark;
 
 
@@ -51,9 +42,9 @@ public class DogsListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dogs_list);
-        parkImage = findViewById(R.id.park_img);
-        navigateToPark = findViewById(R.id.navigate_btn);
-        dogsList = findViewById(R.id.dogs_list);
+        ImageView parkImage = findViewById(R.id.park_img);
+        Button navigateToPark = findViewById(R.id.navigate_btn);
+        ListView dogsList = findViewById(R.id.dogs_list);
         dogsInPark = new ArrayList<>();
 
         final DogAdapter adapter = new DogAdapter(this,dogsInPark);
@@ -70,7 +61,7 @@ public class DogsListActivity extends AppCompatActivity {
         final Park oldPark = new Park();
 
 
-        FirebaseDatabase.getInstance().getReference("Users/" + auth.getCurrentUser().getDisplayName()).child("Park").addListenerForSingleValueEvent(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference("Users/" + Objects.requireNonNull(auth.getCurrentUser()).getDisplayName()).child("Park").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String old = dataSnapshot.child("name").getValue(String.class);
@@ -97,12 +88,12 @@ public class DogsListActivity extends AppCompatActivity {
 
                         if (!dogPhoto.exists()) {                                              // If profile photo for current account does not exist on the phone memory
                             dogPhoto.getParentFile().mkdirs();
+
                             try {
                                 dogPhoto.createNewFile();
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
-
 
                             FirebaseStorage.getInstance().getReference("/" + dataSnapshot.getKey() + "/profilePhoto.png").getFile(dogPhoto).addOnCompleteListener(new OnCompleteListener<FileDownloadTask.TaskSnapshot>() {
                                 @Override
@@ -177,7 +168,7 @@ public class DogsListActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(oldPark.getName() != null) {
-                    FirebaseDatabase.getInstance().getReference("/Parks/" + oldPark.getName()).child("Visitors").child(auth.getCurrentUser().getDisplayName()).removeValue();
+                    FirebaseDatabase.getInstance().getReference("/Parks/" + oldPark.getName()).child("Visitors").child(Objects.requireNonNull(auth.getCurrentUser().getDisplayName())).removeValue();
                 }
                 FirebaseDatabase.getInstance().getReference("/Parks/" + newPark.getName()).child("Visitors").child(auth.getCurrentUser().getDisplayName()).onDisconnect().removeValue();
                 FirebaseDatabase.getInstance().getReference("/Users/" + auth.getCurrentUser().getDisplayName()).child("Park").setValue(newPark);

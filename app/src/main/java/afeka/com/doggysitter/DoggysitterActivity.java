@@ -12,12 +12,10 @@ import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.Objects;
+
 
 public class DoggysitterActivity extends AppCompatActivity {
-    private Button askService;
-    private Button offerService;
-    private ImageView dogPhoto;
-    private TextView unameText;
     private FirebaseAuth auth = FirebaseAuth.getInstance();
 
     @Override
@@ -25,10 +23,18 @@ public class DoggysitterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_doggysitter);
 
-        unameText = findViewById(R.id.uname_text);
-        dogPhoto = findViewById(R.id.photo_view);
-        offerService = findViewById(R.id.offer_service);
-        askService = findViewById(R.id.ask_service);
+        TextView unameText = findViewById(R.id.uname_text);
+        ImageView dogPhoto = findViewById(R.id.photo_view);
+        Button offerService = findViewById(R.id.offer_service);
+        Button askService = findViewById(R.id.ask_service);
+
+        askService.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(DoggysitterActivity.this, AskDoggysitterService.class);
+                startActivity(intent);
+            }
+        });
 
         offerService.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -38,7 +44,7 @@ public class DoggysitterActivity extends AppCompatActivity {
             }
         });
 
-        unameText.append(auth.getCurrentUser().getDisplayName());
+        unameText.append(Objects.requireNonNull(auth.getCurrentUser()).getDisplayName());
         Bitmap bm = BitmapFactory.decodeFile(MainActivity.PHOTO_FILE_LOCATION);
         dogPhoto.setImageBitmap(bm);
 

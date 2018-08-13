@@ -21,14 +21,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.OnDisconnect;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -36,6 +30,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements LocationListener {
     private FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -57,12 +52,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         getLocation();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            while (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, 2);
+            if (ActivityCompat.checkSelfPermission(this,Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.CALL_PHONE}, 2);
                 }
         }
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+        if (ActivityCompat.checkSelfPermission(this,Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
             startActivityForResult(
                 AuthUI.getInstance()
                         .createSignInIntentBuilder()
@@ -81,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         final Intent loggedIn = new Intent(this,ChooseCategory.class);
         if(requestCode == RC_SIGN_IN){
             if(resultCode == RESULT_OK){
-                    F_NAME = auth.getCurrentUser().getDisplayName() + "/profilePhoto.png";
+                    F_NAME = Objects.requireNonNull(auth.getCurrentUser()).getDisplayName() + "/profilePhoto.png";
                     FirebaseDatabase.getInstance().getReference("/Users/" + auth.getCurrentUser().getDisplayName()).child("isOnline").setValue(true);
                     FirebaseDatabase.getInstance().getReference("/Users/" + auth.getCurrentUser().getDisplayName()).child("isOnline").onDisconnect().setValue(false);
                     FirebaseDatabase.getInstance().getReference("/Users/" + auth.getCurrentUser().getDisplayName()).child("Park").onDisconnect().removeValue();
@@ -93,36 +88,35 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                     PHOTO_FILE_LOCATION = localFile.getAbsolutePath();
                     if(!localFile.exists()) {                                              // If profile photo for current account does not exist on the phone memory
                         localFile.getParentFile().mkdirs();
-                    try {
-                        localFile.createNewFile();
-                    } catch (IOException e) {
+                        try {
+                            localFile.createNewFile();
+                        } catch (IOException e) {
                         e.printStackTrace();
                     }
                     storageReference = FirebaseStorage.getInstance().getReference(F_NAME);
-
-                    storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {          // Check if profile photo exists on server.
-                        @Override
-                        public void onSuccess(Uri uri) {
-                            storageReference.getFile(localFile).addOnCompleteListener(new OnCompleteListener<FileDownloadTask.TaskSnapshot>() {          // Loads the profile photo from server
-                                @Override
-                                public void onComplete(@NonNull Task<FileDownloadTask.TaskSnapshot> task) {
-                                    startActivity(loggedIn);
-                                    finish();
-                                }
-                            });
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {                                                                       // Loads placeholder photo
-                            FirebaseStorage.getInstance().getReference("placeholder.jpg").getFile(localFile).addOnCompleteListener(new OnCompleteListener<FileDownloadTask.TaskSnapshot>() {
-                                @Override
-                                public void onComplete(@NonNull Task<FileDownloadTask.TaskSnapshot> task) {
-                                    startActivity(loggedIn);
-                                    finish();
-                                }
-                            });
-                        }
-                    });
+                        storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {          // Check if profile photo exists on server.
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                storageReference.getFile(localFile).addOnCompleteListener(new OnCompleteListener<FileDownloadTask.TaskSnapshot>() {          // Loads the profile photo from server
+                                    @Override
+                                    public void onComplete(@NonNull Task<FileDownloadTask.TaskSnapshot> task) {
+                                        startActivity(loggedIn);
+                                        finish();
+                                    }
+                                });
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {                                                                       // Loads placeholder photo
+                                FirebaseStorage.getInstance().getReference("placeholder.jpg").getFile(localFile).addOnCompleteListener(new OnCompleteListener<FileDownloadTask.TaskSnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<FileDownloadTask.TaskSnapshot> task) {
+                                        startActivity(loggedIn);
+                                        finish();
+                                    }
+                                });
+                            }
+                        });
 
 
 

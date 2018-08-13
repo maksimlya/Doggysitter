@@ -1,12 +1,9 @@
 package afeka.com.doggysitter;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.Image;
-import android.nfc.Tag;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,19 +11,15 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
-import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -35,7 +28,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -62,7 +54,6 @@ public class ProfileActivity extends AppCompatActivity {
     private ImageView choosePhoto;
     private Button addressBtn;
     private EditText phoneNumber;
-   // private Button resetValues;
    int PLACE_PICKER_REQUEST = 1;
 
     private FileOutputStream outputStream;
@@ -91,7 +82,6 @@ public class ProfileActivity extends AppCompatActivity {
         addressBtn = findViewById(R.id.address_btn);
         phoneNumber = findViewById(R.id.phone_input);
         Button saveToDB = findViewById(R.id.save_btn);
-       // resetValues = findViewById(R.id.reset_btn);
 
        dPhoto = BitmapFactory.decodeFile(MainActivity.PHOTO_FILE_LOCATION);
 
@@ -124,7 +114,7 @@ public class ProfileActivity extends AppCompatActivity {
         }   catch (GooglePlayServicesRepairableException e){
             e.getConnectionStatusCode();
         } catch (GooglePlayServicesNotAvailableException e){
-
+            e.getMessage();
         }
 
             }
@@ -138,6 +128,7 @@ public class ProfileActivity extends AppCompatActivity {
                     Toast.makeText(ProfileActivity.this, str, Toast.LENGTH_SHORT).show();
                 } else {
                     phone = ((EditText) findViewById(R.id.phone_input)).getText().toString();
+                    address = addressBtn.getText().toString();
                     dName = ((EditText) findViewById(R.id.dog_name_text)).getText().toString();
                     dAge = Integer.parseInt(((EditText) findViewById(R.id.age_txt)).getText().toString());
                     dSpecie = ((EditText) findViewById(R.id.specie_text)).getText().toString();
@@ -151,15 +142,18 @@ public class ProfileActivity extends AppCompatActivity {
                     mDatabase.child("Address").setValue(address);
                     mDatabase.child("Phone Number").setValue(phone);
 
-                    UploadTask uploadTask = storageReference.putBytes(data);
+                    storageReference.putBytes(data);
 
                     try {
                         File a = new File(MainActivity.PHOTO_FILE_LOCATION);
-                        boolean mkdirs = a.getParentFile().mkdirs();
-                        boolean newFile = a.createNewFile();
-                        outputStream = new FileOutputStream(a,false);
-                        outputStream.write(data);
-                        outputStream.close();
+
+                        a.getParentFile().mkdirs();
+                        a.createNewFile();
+
+                            outputStream = new FileOutputStream(a, false);
+                            outputStream.write(data);
+                            outputStream.close();
+
                     } catch (FileNotFoundException e){
                         e.fillInStackTrace();
                         Log.d("Debug",e.getMessage());
@@ -232,7 +226,9 @@ public class ProfileActivity extends AppCompatActivity {
                 LatLng coordinates = PlacePicker.getLatLngBounds(data).getCenter();
                 DatabaseReference ref = FirebaseDatabase.getInstance().getReference("/Geofire/Doggysitters");
                 GeoFire geoFire = new GeoFire(ref);
-                geoFire.setLocation(auth.getCurrentUser().getDisplayName(), new GeoLocation(coordinates.latitude, coordinates.longitude), new GeoFire.CompletionListener() {
+                String user = Objects.requireNonNull(auth.getCurrentUser()).getDisplayName();
+                if(user != null)
+                geoFire.setLocation(user, new GeoLocation(coordinates.latitude, coordinates.longitude), new GeoFire.CompletionListener() {
                     @Override
                     public void onComplete(String key, DatabaseError error) {
                         Toast.makeText(ProfileActivity.this,"Success!",Toast.LENGTH_SHORT).show();
