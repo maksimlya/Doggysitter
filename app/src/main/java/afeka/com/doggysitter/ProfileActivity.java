@@ -56,7 +56,7 @@ public class ProfileActivity extends AppCompatActivity {
     private EditText phoneNumber;
     int PLACE_PICKER_REQUEST = 1;
 
-    private FileOutputStream outputStream;                  // Output stream to download profile photo to phone's local memory
+    private FileOutputStream outputStream;                  // Output stream to download profile photo to phone's local memory.
 
     private String dName;
     private  String address;
