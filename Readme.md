@@ -8,4 +8,4 @@ Final Project for Android course - Doggysitter application.
 <img src="screenshots/5.png"/>
 <img src="screenshots/6.png"/>
 
-Full Project Documentation(Hebrew) <a href="screenshots/DoggysitterFinal.pptx"> Here </a>
+Full Project Documentation(Hebrew) <a href="screenshots/DoggysitterFinal.pdf"> Here </a>
